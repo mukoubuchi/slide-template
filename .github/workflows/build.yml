@@ -1,0 +1,49 @@
+# Build both templates with XeLaTeX.
+#
+# - pull_request / workflow_dispatch: build check only
+# - tag push (v*): build and attach slide-ja.pdf / slide-en.pdf to the release
+#
+# Runs on macOS because the font fallback chain in slidestyle.sty relies on
+# fonts bundled with macOS (Hiragino Maru Gothic ProN, Menlo).
+name: build
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install TeX Live (MacTeX, no GUI)
+        run: |
+          brew install --cask mactex-no-gui
+          echo "/Library/TeX/texbin" >> "$GITHUB_PATH"
+
+      - name: Build Japanese template
+        working-directory: tex/template-ja
+        run: latexmk
+
+      - name: Build English template
+        working-directory: tex/template-en
+        run: latexmk
+
+      - name: Attach PDFs to the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cp tex/template-ja/slide.pdf slide-ja.pdf
+          cp tex/template-en/slide.pdf slide-en.pdf
+          # create a draft release first if the tag was pushed before the release
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --draft --title "$TAG" --notes "Draft — replace with release notes"
+          gh release upload "$TAG" slide-ja.pdf slide-en.pdf --clobber
