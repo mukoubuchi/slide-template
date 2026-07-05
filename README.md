@@ -1,5 +1,6 @@
 # slide-template
 
+[![build](https://github.com/mukoubuchi/slide-template/actions/workflows/build.yml/badge.svg)](https://github.com/mukoubuchi/slide-template/actions/workflows/build.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 ![XeLaTeX](https://img.shields.io/badge/XeLaTeX-required-008080)
 ![Beamer](https://img.shields.io/badge/Beamer-16%3A9-2f855a)
@@ -7,6 +8,11 @@
 
 XeLaTeX + Beamer presentation slide templates (16:9) with a dark-green theme,
 a header band, and a circular progress indicator in the top-right corner.
+
+<p align="center">
+  <img src=".github/release-assets/v1.0.0/title-ja.png" width="49%" alt="Title page of the Japanese template: a rounded dark-green title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
+  <img src=".github/release-assets/v1.0.0/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a blue definition block, an itemized element list, and a red Point block">
+</p>
 
 | Directory | Description |
 | --- | --- |
@@ -24,6 +30,16 @@ latexmk -c           # remove intermediate files
 To start a new talk, copy the whole template folder and edit the
 "presentation info" block at the top of `slide.tex`. See each template's
 README for details.
+
+Prebuilt PDFs (`slide-ja.pdf` / `slide-en.pdf`) are attached to each
+[release](https://github.com/mukoubuchi/slide-template/releases), so you can
+preview both templates without a TeX installation.
+
+## Continuous integration
+
+GitHub Actions ([`build.yml`](.github/workflows/build.yml)) builds both
+templates on every pull request, and attaches the built PDFs to the release
+when a `v*` tag is pushed.
 
 ## Requirements
 
