@@ -1,0 +1,721 @@
+%%==================================================================
+%% slidestyle.sty --- common slide settings (XeLaTeX + Beamer)
+%%
+%% Layout:
+%%   1. Fonts (Latin / CJK)
+%%   2. Colors
+%%   3. Beamer theme and templates
+%%   4. Fonts for Beamer elements
+%%   5. TikZ (libraries, styles, charts)
+%%   6. Math
+%%   7. Emphasis and badge macros
+%%   8. Block environments and lists
+%%   9. Footnotes and bibliography
+%%  10. Misc (URL breaking, navigation control)
+%%==================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{slidestyle}[2026/07/05 v2.2 common slide style]
+
+%%------------------------------------------------------------------
+%% 1. Fonts
+%%------------------------------------------------------------------
+\usefonttheme{professionalfonts}
+\usepackage{fontspec}
+\usepackage{xeCJK} % CJK typesetting (line breaking, CJK/Latin spacing)
+
+% Rounded gothic for both Latin and CJK; fall back to Hiragino Maru
+% Gothic where Rounded-X Mgen+ is not installed
+\IfFontExistsTF{Rounded-X Mgen+ 1cp}{%
+  \setmainfont{Rounded-X Mgen+ 1cp}%
+  \setsansfont{Rounded-X Mgen+ 1cp}%
+  \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+  \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+}{%
+  \setmainfont{Hiragino Maru Gothic ProN}%
+  \setsansfont{Hiragino Maru Gothic ProN}%
+  \setCJKmainfont{Hiragino Maru Gothic ProN}%
+  \setCJKsansfont{Hiragino Maru Gothic ProN}%
+}
+\IfFontExistsTF{Comic Sans MS}{%
+  \setmonofont{Comic Sans MS}%
+}{%
+  \setmonofont{Menlo}%
+}
+\IfFontExistsTF{Rounded-X Mgen+ 1mn}{%
+  \setCJKmonofont{Rounded-X Mgen+ 1mn}%
+}{%
+  \setCJKmonofont{Hiragino Maru Gothic ProN}%
+}
+
+% Rounded gothic fonts have no italic shape, so declare an m/it -> m/n
+% fallback (silences "Font shape undefined" warnings from {\em ...}
+% in the bibliography and elsewhere)
+\AtBeginDocument{%
+  \DeclareFontShape{\encodingdefault}{\rmdefault}{m}{it}{<->ssub*\rmdefault/m/n}{}%
+  \DeclareFontShape{\encodingdefault}{\sfdefault}{m}{it}{<->ssub*\sfdefault/m/n}{}%
+}
+
+\usepackage{upgreek}      % upright Greek letters (used by \mathup)
+\usepackage{anyfontsize}  % \fontsize at arbitrary sizes
+
+%%------------------------------------------------------------------
+%% 2. Colors
+%%------------------------------------------------------------------
+\definecolor{agu}{RGB}{5,44,3}        % base color (dark green)
+\definecolor{agu2}{RGB}{64,224,208}   % accent (turquoise)
+\definecolor{oxford}{RGB}{0,33,71}
+\definecolor{harvard}{RGB}{165,27,47}
+\definecolor{princeton}{RGB}{255,102,0}
+\definecolor{berkeley}{RGB}{245,170,0}
+\definecolor{kenbridge}{RGB}{153,204,204}
+\definecolor{stanford}{RGB}{196,30,58}
+\definecolor{tufts}{RGB}{102,153,204}
+\definecolor{yale}{RGB}{15,77,146}
+\definecolor{gaidai}{RGB}{247,81,167}
+\definecolor{example}{RGB}{5,134,66}  % for example blocks
+% for pie and bar charts
+\definecolor{rosso}{RGB}{220,57,18}
+\definecolor{giallo}{RGB}{255,153,0}
+\definecolor{blu}{RGB}{102,140,217}
+\definecolor{verde}{RGB}{16,150,24}
+\definecolor{viola}{RGB}{153,0,153}
+
+%%------------------------------------------------------------------
+%% 3. Beamer theme and templates
+%%    The title page, header, and progress circle are merged and
+%%    simplified from the AAU Simple Beamer Theme v1.3.2
+%%    (Copyright (c) 2014 Jesper Kjær Nielsen, GPL v3+)
+%%------------------------------------------------------------------
+\RequirePackage{calc} % length arithmetic (header dimensions, frame title width)
+
+\usecolortheme[named=agu]{structure}
+\setbeamercovered{transparent}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+% white-on-base-color frametitle (the colors the old beamerthemesplit used)
+\setbeamercolor{frametitle}{fg=white,bg=agu}
+\setbeamercolor{framesubtitle}{fg=white}
+\setbeamercolor{primary}{fg=white,bg=agu}
+\setbeamercolor{secondary}{fg=white,bg=agu2}
+\setbeamercolor{logo}{bg=white}
+\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=agu2,bg=structure.fg}
+
+\setbeamertemplate{navigation symbols}{} % hide navigation symbols
+\setbeamertemplate{footline}{}           % no footer (header only)
+\setbeamertemplate{bibliography item}[text] % numbered bibliography marks
+
+% Customization hooks (override with \renewcommand in the document)
+\providecommand{\aauEmail}{Email Address}         % e-mail address in header
+\providecommand{\aauEmailIcon}{Figs/email}        % e-mail icon image
+\providecommand{\aauLogo}{Figs/agu}               % logo inside the top-right circle
+\providecommand{\aauEvent}{}                      % "# Event Name" at the bottom of the title page (hidden if empty)
+
+% Header e-mail: only becomes a mailto link when \aauEmail is a real address
+% (contains @); placeholder text like "Email Address" stays a plain string
+\newcommand{\aauEmailMailto}[1]{\href{mailto:\aauEmail}{#1}}
+\ExplSyntaxOn
+\NewDocumentCommand { \aauEmailHref } { m }
+  {
+    \str_set:Nx \l_tmpa_str { \aauEmail }
+    \str_if_in:NnTF \l_tmpa_str { @ }
+      { \aauEmailMailto { #1 } }
+      { #1 }
+  }
+\ExplSyntaxOff
+
+\makeatletter
+% Header dimensions (based on the frametitle font's leading at this point)
+\newlength{\beamer@height}
+\usebeamerfont{frametitle}
+\setlength{\beamer@height}{2.5\baselineskip}
+\reset@font
+% Height of the header band (public name referenced from the document;
+% the band is drawn over the text area)
+\newlength{\aauHeaderHeight}
+\setlength{\aauHeaderHeight}{\beamer@height}
+\newlength{\beamer@logoradius}
+\setlength{\beamer@logoradius}{0.95\beamer@height/2}
+\newlength{\beamer@borderwidth}
+\setlength{\beamer@borderwidth}{2mm}
+\newlength{\beamer@logoinnerradius}
+\setlength{\beamer@logoinnerradius}{1.1\beamer@logoradius}
+\newlength{\beamer@logoouterradius}
+\setlength{\beamer@logoouterradius}{\beamer@logoinnerradius+\beamer@borderwidth}
+\newlength{\beamer@counterradius}
+\setlength{\beamer@counterradius}{\beamer@logoinnerradius/2+\beamer@logoouterradius/2}
+
+% Title page (structure: title box / date / author / affiliation text /
+% affiliation logo / "# Event Name")
+\newlength{\aau@titleheight}
+\setbeamertemplate{title page}{%
+  % if the event ribbon is present, shrink the text area by its height
+  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2.5em}}%
+  \begin{minipage}[c][\aau@titleheight][c]{\textwidth}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[wd=\textwidth,center,sep=\baselineskip,rounded=true,shadow=true]{frametitle}
+      \fontsize{18pt}{13pt}\selectfont{\bf\inserttitle}\\
+      {\insertsubtitle}
+    \end{beamercolorbox}\vspace*{\baselineskip}
+    \begin{center}
+      {\usebeamerfont{date}\insertdate}\vspace*{\baselineskip}
+
+      {\usebeamerfont{author}\insertauthor}\vspace*{0.5\baselineskip}
+
+      {\usebeamerfont{institute}\insertinstitute}
+
+      {\inserttitlegraphic}
+    \end{center}
+    \vfill
+  \end{minipage}%
+  % event name: dark-green box that stretches with the text (white text,
+  % bottom edge flush with the bottom of the slide)
+  \ifdefempty{\aauEvent}{}{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[fill=agu, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
+        at (current page.south) {\usebeamerfont{author}\aauEvent};
+    \end{tikzpicture}}
+}
+
+% Header (author / e-mail / title band + background)
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=1.0\paperwidth,ht=2.25ex,dp=1ex,left]{headfoot}%
+      \usebeamerfont{section in head/foot}\hspace*{3.5ex}%
+      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{agu2}{\aauEmail}}) \ |\ %
+              \insertshorttitle%
+  \end{beamercolorbox}%
+  \aauheaderbackground%
+}
+
+% Frame title (typeset in a width that avoids the top-right logo)
+\setbeamertemplate{frametitle}{%
+  \ifx\insertframesubtitle\@empty%
+  \begin{minipage}[c][\beamer@height][c]{\textwidth-1.5\beamer@logoouterradius}
+    {\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle\par}%
+  \end{minipage}
+  \else
+  \begin{minipage}[t][\beamer@height][t]{\textwidth-1.5\beamer@logoouterradius}
+    {\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle\par}%
+    {\usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+  \end{minipage}
+  \fi
+}
+
+% Header background: base-color band + top-right logo circle +
+% progress arc and page number
+\newcommand{\aauheaderbackground}{%
+  \begin{tikzpicture}[overlay]
+    \coordinate (UL) at (0,0);                     % top-left of the slide
+    \coordinate (HLR) at (\paperwidth,-\beamer@height); % bottom-right of the header
+    \coordinate (logopos) at ([shift={(-\beamer@logoouterradius-\beamer@borderwidth,0.5\beamer@height)}] HLR);
+    {\usebeamercolor{AAUsimple}%
+      \usebeamercolor{normal text}%
+      \draw[draw=none,fill=agu] (UL) rectangle (HLR);
+      \fill[fill=agu] (logopos) circle (\beamer@logoouterradius);
+      \fill[fill=normal text.bg] (logopos) circle (\beamer@logoinnerradius);
+      % clip the logo to a white circle (keeps square images from
+      % sticking out of the ring)
+      \begin{scope}
+        \clip (logopos) circle (\beamer@logoinnerradius);
+        \node at (logopos) {\includegraphics[width=2\beamer@logoradius]{\aauLogo}};
+      \end{scope}
+      % progress arc (frame number / total frames)
+      \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
+      \draw[color=agu2,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
+      \fill[fill=white] ([shift={(\progress:\beamer@counterradius)}] logopos) circle (0.5\beamer@borderwidth);
+      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{agu}\insertframenumber}};
+    }
+  \end{tikzpicture}%
+}
+\makeatother
+
+% List and TOC markers
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{itemize subitem}[ball] % second-level marker: shaded ball
+\setbeamertemplate{sections/subsections in toc}[ball]
+\setbeamercolor{item projected}{fg=white,bg=agu}
+
+% Block colors
+\setbeamercolor{block title}{fg=white,bg=blue}
+\setbeamercolor{block title alerted}{fg=white,bg=red}
+\setbeamercolor{block title example}{fg=white,bg=example}
+\setbeamercolor{block body}{use=block title,bg=block title.bg!5}
+\setbeamercolor{block body alerted}{use=block title alerted,bg=block title alerted.bg!5}
+\setbeamercolor{block body example}{use=block title example,bg=block title example.bg!5}
+
+% goto button colors
+\setbeamercolor{button}{bg=agu2,fg=white}
+
+% TOC depth (0: chapter, 1: section, 2: subsection, 3: subsubsection)
+\setcounter{tocdepth}{3}
+
+% Tighten the spacing between sections in the TOC
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.7em}{}{}
+\makeatother
+
+% Automatically insert a TOC slide at every \section
+\AtBeginSection[]
+{\begin{frame}
+    \frametitle{Contents}
+    \tableofcontents[hideothersubsections,sectionstyle=show/shaded]
+\end{frame}}
+
+%%------------------------------------------------------------------
+%% 4. Fonts for Beamer elements
+%%------------------------------------------------------------------
+\setbeamerfont{normal text}{series=\mdseries}
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamerfont{example text}{series=\bfseries}
+\setbeamerfont{structure}{series=\bfseries}
+\setbeamerfont{tiny structure}{series=\bfseries}
+\setbeamerfont{title}{series=\bfseries,size=\fontsize{20pt}{20pt}\selectfont}
+\setbeamerfont{title in head/foot}{series=\mdseries}
+\setbeamerfont{title in sidebar}{series=\bfseries}
+\setbeamerfont{author}{series=\mdseries}
+\setbeamerfont{author in head/foot}{series=\mdseries}
+\setbeamerfont{author in sidebar}{series=\mdseries}
+\setbeamerfont{institute}{series=\mdseries}
+\setbeamerfont{institute in head/foot}{series=\mdseries}
+\setbeamerfont{institute in sidebar}{series=\mdseries}
+\setbeamerfont{date}{series=\mdseries}
+\setbeamerfont{date in head/foot}{series=\mdseries}
+\setbeamerfont{date in sidebar}{series=\mdseries}
+\setbeamerfont{part name}{series=\bfseries}
+\setbeamerfont{section in toc}{series=\bfseries}
+\setbeamerfont{section in head/foot}{series=\bfseries}
+\setbeamerfont{section in sidebar}{series=\bfseries}
+\setbeamerfont{subsection in toc}{series=\mdseries}
+\setbeamerfont{subsection in head/foot}{series=\mdseries}
+\setbeamerfont{subsection in sidebar}{size=\tiny,series=\mdseries}
+\setbeamerfont{headline}{series=\bfseries}
+\setbeamerfont{footline}{series=\bfseries}
+\setbeamerfont{frametitle}{series=\bfseries,size=\fontsize{15pt}{15pt}\selectfont}
+\setbeamerfont{caption}{series=\mdseries}
+\setbeamerfont{button}{series=\bfseries}
+\setbeamerfont{block body}{series=\mdseries}
+\setbeamerfont{block body alerted}{series=\mdseries}
+\setbeamerfont{block body example}{series=\mdseries}
+\setbeamerfont{block title}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{block title alerted}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{block title example}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{item}{series=\bfseries}
+\setbeamerfont{item projected}{series=\bfseries}
+\setbeamerfont{enumerate item}{series=\bfseries}
+\setbeamerfont{itemize/enumerate body}{series=\mdseries}
+\setbeamerfont{itemize/enumerate subbody}{series=\mdseries}
+\setbeamerfont{itemize/enumerate subsubbody}{series=\mdseries}
+\setbeamerfont{abstract}{series=\mdseries}
+\setbeamerfont{verse}{series=\mdseries}
+\setbeamerfont{quotation}{series=\mdseries}
+\setbeamerfont{note page}{series=\mdseries}
+\setbeamerfont{section number projected}{series=\bfseries}
+
+%%------------------------------------------------------------------
+%% 5. TikZ
+%%------------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{
+  angles,               % angle marks (pic {angle=...})
+  arrows, arrows.meta,
+  automata,
+  calc,
+  chains,
+  decorations.markings, decorations.text,
+  intersections,
+  matrix,
+  patterns,
+  positioning,
+  shadows,
+  shapes,               % geometric / symbols / misc in one go
+  shapes.callouts       % speech bubbles
+}
+
+% pgf layers (\pie uses background/foreground)
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+% Common styles
+\tikzset{
+  every picture/.append style={remember picture},
+  na/.style={baseline=-.5ex}, % anchor for inline text
+  arrow/.style={thick,-latex,font=\sffamily},
+  % flowcharts
+  decision/.style={diamond, very thick, draw=green!50!black!50,
+    top color=white, bottom color=green!50!black!20,
+    text width=3em, text badly centered, inner sep=0pt, minimum size=3em, font=\footnotesize},
+  block/.style={rectangle, very thick, draw=blue!50!black!50,
+    top color=white, bottom color=blue!50!black!20,
+    text width=4em, text centered, rounded corners, font=\footnotesize, minimum height=1em},
+  line/.style={draw=black, -stealth},
+  terminal/.style={ellipse, draw=red!50!black!50, very thick,
+    top color=white, bottom color=red!50!black!20, font=\footnotesize},
+  record/.style={cloud, aspect=2, very thick, text centered, draw=yellow!50!black!50,
+    top color=white, bottom color=yellow!50!black!20, text width=8em, inner sep=-5pt, font=\footnotesize},
+  bomb/.style={starburst, aspect=2, very thick, text centered, draw=red!50!black!50,
+    top color=white, bottom color=yellow!50!black!20, text width=8em, inner sep=1pt, font=\footnotesize},
+  % goal graphs
+  big dot/.style={circle, draw, inner sep=0pt, minimum size=3mm, fill=yellow, font=\footnotesize},
+  input/.style={draw, trapezium, trapezium left angle=60, trapezium right angle=120,
+    line width=1.2pt, fill={rgb:black,1;white,2}, font=\footnotesize},
+  obstacle/.style={draw, trapezium, trapezium left angle=120, trapezium right angle=60,
+    line width=1.2pt, fill={rgb:black,1;white,2}, font=\footnotesize},
+  flash/.style args={#1:#2}{postaction=decorate, font=\footnotesize, decoration={name=markings,
+      mark=at position #1 with {%
+        \draw[fill=#2, line width=.75\pgflinewidth, line cap=round, line join=round]
+        (+\pgflinewidth,+7\pgflinewidth)   -- ++ ( left:+2\pgflinewidth)
+        -- (+-4\pgflinewidth,+-\pgflinewidth) -- ++ (right:+5\pgflinewidth)
+        -- (+-\pgflinewidth,+-7\pgflinewidth) -- ++ (right:+2\pgflinewidth)
+        -- (+4\pgflinewidth,\pgflinewidth)    -- ++ (left:+5\pgflinewidth)
+        -- cycle;}}
+  },
+  % connectors
+  connector/.style={-latex, font=\scriptsize},
+  rectangle connector/.style={connector,
+    to path={(\tikztostart) -- ++(#1,0pt) \tikztonodes |- (\tikztotarget) }, pos=0.5},
+  rectangle connector/.default=-2cm,
+  straight connector/.style={connector, to path=--(\tikztotarget) \tikztonodes}
+}
+
+% Turn words in the text into nodes and connect them with arrows
+% (mark with \SET, connect with \CON)
+\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=agu2](#1){#2};}
+\newcommand{\SETR}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
+\newcommand{\SETG}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
+\newcommand{\SETB}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
+\newcommand{\SETY}[2]{\tikz[baseline=(#1.base)]\node[na,fill=yellow!20](#1){#2};}
+\newcommand{\CON}[5][thick]{\begin{tikzpicture}[overlay]\path[->,#1](#2) edge [out=#4, in=#5] (#3);\end{tikzpicture}}
+
+% Arc of the angle enclosed by three points
+\newcommand\myarc[4]{\begin{scope}[very thick]
+    \clip (#1)--(#2)--(#3)--cycle;
+    \draw(#1)circle(#4);\end{scope}}
+
+% Multiple pointers coming out of a single callout
+% usage: \path[multiple absolute pointers={[fill=agu2, above of=X]{A.north, B.north}{text}}];
+\makeatletter
+\tikzset{
+  expand me/.style={#1},
+  multiple absolute pointers/.style args={#1[#2]#3#4}{
+    insert path={
+      \foreach \qrr@tikz@calloutabsolutepointer in {#3} {
+        \pgfextra
+          \expandafter\pgfutil@ifnextchar\expandafter[%
+          \expandafter\qrr@tikz@parse@calloutabsolutepointer\expandafter{%
+          \expandafter\qrr@tikz@parse@calloutabsolutepointer\expandafter[\expandafter]\expandafter}\qrr@tikz@calloutabsolutepointer\@qrr@tikz@parse@calloutabsolutepointer
+        \endpgfextra
+        node[#2, shape/.expanded=\tikz@shape\space callout, expand me/.expanded=\qrr@tikz@calloutabsolutepointer@options, callout absolute pointer={(\qrr@tikz@calloutabsolutepointer@)}] {#4}
+      }
+      \pgfextra
+        \def\pgf@tempa{#1}
+        \pgfutil@in@*{#1}
+        \ifpgfutil@in@\else
+          \pgfkeysalso{insert path={node[#2] {#4}}}
+        \fi
+      \endpgfextra}}}
+
+\def\qrr@tikz@parse@calloutabsolutepointer[#1]#2\@qrr@tikz@parse@calloutabsolutepointer{%
+  \gdef\qrr@tikz@calloutabsolutepointer@options{#1}%
+  \gdef\qrr@tikz@calloutabsolutepointer@{#2}%
+}
+\makeatother
+
+% Pie and bar charts
+\tikzset{
+  chart/.style={
+    legend label/.style={font={\scriptsize},anchor=west,align=left},
+    legend box/.style={rectangle, draw, minimum size=5pt},
+    axis/.style={black,semithick,->},
+    axis label/.style={anchor=east,font={\tiny}},
+  },
+  bar chart/.style={
+    chart,
+    bar width/.code={
+      \pgfmathparse{##1/2}
+      \global\let\bar@w\pgfmathresult
+    },
+    bar/.style={very thick, draw=white},
+    bar label/.style={font={\bf\small},anchor=north},
+    bar value/.style={font={\footnotesize}},
+    bar width=.75,
+  },
+  pie chart/.style={
+    chart,
+    slice/.style={line cap=round, line join=round, very thick, draw=white},
+    pie title/.style={font={\bf}},
+    pie values/.style={font={\footnotesize}},
+    slice type/.style 2 args={
+      ##1/.style={fill=##2},
+      values of ##1/.style={}
+    }
+  }
+}
+
+\newcommand{\pie}[3][]{
+    \begin{scope}[#1]
+    \pgfmathsetmacro{\curA}{90}
+    \pgfmathsetmacro{\r}{1}
+    \def\c{(0,0)}
+    \node[pie title] at (90:1.3) {#2};
+    \foreach \v/\s in{#3}{
+        \pgfmathsetmacro{\deltaA}{\v/100*360}
+        \pgfmathsetmacro{\nextA}{\curA + \deltaA}
+        \pgfmathsetmacro{\midA}{(\curA+\nextA)/2}
+
+        \path[slice,\s] \c
+            -- +(\curA:\r)
+            arc (\curA:\nextA:\r)
+            -- cycle;
+        \pgfmathsetmacro{\d}{max((\deltaA * -(.5/50) + 1) , .5)}
+
+        \begin{pgfonlayer}{foreground}
+        \path \c -- node[pos=\d,pie values,values of \s]{$\v\%$} +(\midA:\r);
+        \end{pgfonlayer}
+
+        \global\let\curA\nextA
+    }
+    \end{scope}
+}
+
+\newcommand{\legend}[2][]{
+    \begin{scope}[#1]
+    \path
+        \foreach \n/\s in {#2}
+            {
+                  ++(0,-10pt) node[\s,legend box] {} +(5pt,0) node[legend label] {\n}
+            }
+    ;
+    \end{scope}
+}
+
+% Keyboard key rendering
+\newcommand*\keystroke[1]{%
+  \tikz[baseline=(key.base)]
+    \node[%
+      draw,
+      fill=white,
+      drop shadow={shadow xshift=0.25ex,shadow yshift=-0.25ex,fill=black,opacity=0.75},
+      rectangle,
+      rounded corners=2pt,
+      inner sep=1pt,
+      line width=0.5pt,
+      font=\scriptsize\sffamily
+    ](key) {#1\strut}
+  ;
+}
+
+%%------------------------------------------------------------------
+%% 6. Math
+%%------------------------------------------------------------------
+\usepackage{mathtools}
+\usepackage{empheq}
+\usepackage{bm}
+\usepackage{braket}   % \Set
+\usepackage{mathrsfs} % script letters \mathscr
+
+\everymath{\displaystyle}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\MIT}[1]{\mbox{\it{#1}}} % Math ITalic
+\newcommand\DEFQE{\rotatebox{180}{$\coloneqq$}}
+\newcommand\DEFEQ{\coloneqq}
+\newcommand\DEFLRA{\vcentcolon\hspace{-0.5pt}\Leftrightarrow}
+\newcommand\DEFSSE{\vcentcolon\hspace{-0.5pt}\subseteq}
+\newcommand*{\Perm}[2]{{}_{#1}P_{#2}} % permutations
+
+% Upright math symbols (\mathup{\alpha} etc.)
+\DeclareRobustCommand{\mathup}[1]{\begingroup\changegreek\mathrm{#1}\endgroup}
+\DeclareRobustCommand{\mathbfup}[1]{\begingroup\changegreekbf\mathbf{#1}\endgroup}
+\makeatletter
+\def\changegreek{\@for\next:={%
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,kappa,lambda,mu,nu,xi,pi,rho,sigma,%
+  tau,upsilon,phi,chi,psi,omega,varepsilon,vartheta,varpi,varrho,varsigma,varphi}%
+  \do{\expandafter\let\csname\next\expandafter\endcsname\csname\next up\endcsname}}
+\def\changegreekbf{\@for\next:={%
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,kappa,lambda,mu,nu,xi,pi,rho,sigma,%
+  tau,upsilon,phi,chi,psi,omega,varepsilon,vartheta,varpi,varrho,varsigma,varphi}%
+  \do{\expandafter\def\csname\next\expandafter\endcsname\expandafter{%
+    \expandafter\bm\expandafter{\csname\next up\endcsname}}}}
+\makeatother
+
+% Latin variables in math in upright CMR
+\DeclareSymbolFont{mymathvariables}{T1}{cmr}{m}{n}
+\DeclareSymbolFontAlphabet{\mathnormal}{mymathvariables}
+
+%%------------------------------------------------------------------
+%% 7. Emphasis and badge macros
+%%------------------------------------------------------------------
+\usepackage{pifont}           % \ding
+\usepackage[normalem]{ulem}   % \sout (strikethrough)
+
+% Emphasis
+\newcommand{\BC}[1]{\textcolor{agu2}{\bf #1}}       % Bold Color
+\newcommand{\BR}[1]{\textcolor{red}{\bf #1}}        % Bold Red
+\newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (bold red)
+\newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
+
+% Arrow symbols
+\newcommand{\YA}{\textcolor{agu2}{\ding{220}}}
+\newcommand{\WYA}{\textcolor{white}{\ding{220}}}
+\newcommand{\YAA}{\textcolor{agu2}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+
+% Paragraph boxes
+\newcommand{\PB}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
+\newcommand{\PF}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
+
+% Figure captions (turquoise rounded chip)
+\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=agu2,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+
+% Badges
+\newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](ex){\textcolor{white}{\bf Ex}};}} % same green as exampleblock
+\newcommand{\chu}{\tikz[baseline]{\node[fill=red,anchor=base](note){\textcolor{white}{\bf Note}};}}
+\newcommand{\mon}{\tikz[baseline]{\node[fill=agu2,anchor=base](q){\textcolor{white}{\bf Q}};}}
+\newcommand{\hatten}{\tikz[baseline]{\node[fill=berkeley,anchor=base](adv){\textcolor{white}{\bf Advanced}};}}
+\newcommand{\ari}{\tikz[baseline]{\node[fill=harvard,anchor=base](tpl){\textcolor{white}{\bf Template}};}}
+\newcommand{\nashi}{\tikz[baseline]{\node[fill=kenbridge,anchor=base](notpl){\textcolor{white}{\bf No template}};}}
+\newcommand{\hoshin}{\tikz[baseline]{\node[fill=oxford,anchor=base](policy){\textcolor{white}{\bf Policy}};}}
+\newcommand{\kotae}{\tikz[baseline]{\node[fill=berkeley,anchor=base](a){\textcolor{white}{\bf A}};}}
+\newcommand{\fukushu}{\tikz[baseline]{\node[fill=tufts,anchor=base](review){\textcolor{white}{\bf Review}};}}
+
+% Reference enumerate circled numbers with \ref
+\newcommand\circref[1]{%
+  \usebeamercolor{enumerate item}%
+  \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
+  \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf\ref{#1}};%
+}
+\newcommand\circnum[1]{%
+  \usebeamercolor{enumerate item}%
+  \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
+  \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf #1};%
+}
+\newcommand\tritem{{\footnotesize$\blacktriangleright$}}
+
+% Dashes
+\newcommand\DASH{\textendash}
+\newcommand\DDASH{\textemdash}
+
+% Tilted exclamation marks
+\newcommand{\EX}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\EXW}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\EQ}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
+
+% Jump button to a labeled frame
+\newcommand{\GO}[2]{\raisebox{-0ex}{\hyperlink{#1}{\beamergotobutton{#2}}}}
+
+% Cross-references
+\newcommand{\tabref}[1]{{\bf Table~\ref{#1}}}
+\newcommand{\equref}[1]{Eq.~(\ref{#1})}
+\newcommand{\figref}[1]{{\bf Fig.~\ref{#1}}}
+\newcommand{\secref}[1]{Sec.~\ref{#1}}
+\newcommand{\secrefto}[1]{\ding{42}~Sec.~\ref{#1}}
+
+% Lower table title characters slightly
+\newcommand{\sage}[1]{\raisebox{-1pt}{#1}}
+
+%%------------------------------------------------------------------
+%% 8. Block environments, lists, and tables
+%%------------------------------------------------------------------
+% Block for in-class exercises (orange)
+\newenvironment<>{exercise}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=princeton}%
+  \begin{block}#2{#1}}{\end{block}}
+
+% Block for assignments (yellow)
+\newenvironment<>{assignment}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=berkeley}%
+  \begin{block}#2{#1}}{\end{block}}
+
+% Left margin and item spacing of lists
+\setlength{\leftmargini}{1em}
+\setbeamertemplate{itemize/enumerate body begin}{%
+  \setlength{\leftmargini}{0pt}%
+  \setlength{\parsep}{0pt}%
+}
+
+% List margins inside blocks
+\makeatletter
+\addtobeamertemplate{block begin}{%
+\def\@listi{\leftmargin3em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\addtobeamertemplate{block example begin}{%
+\def\@listi{\leftmargin2em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\addtobeamertemplate{block alerted begin}{%
+\def\@listi{\leftmargin2em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\makeatother
+
+% beamer does not define \labelenumi
+\def\labelenumi{\theenumi}
+
+% \fbox without frame and padding
+\fboxrule=0pt
+\fboxsep=0pt
+
+% Tables: thick rules (\whline and column specifier I)
+\usepackage{array}
+\newcolumntype{I}{!{\vrule width 3\arrayrulewidth}}
+\newlength\savedwidth
+\newcommand\whline{%
+  \noalign{\xdef\origarrayrulewidth{\the\arrayrulewidth}%
+  \global\arrayrulewidth 3\arrayrulewidth}%
+  \hline%
+  \noalign{\global\arrayrulewidth\origarrayrulewidth}%
+}
+
+%%------------------------------------------------------------------
+%% 9. Footnotes and bibliography
+%%------------------------------------------------------------------
+\usepackage{fourier-orns} % ornament for footnote marks (\textxswdown)
+\usepackage{nccfoots}     % \Footnote etc.
+
+% Footnote marks: sword ornament + lowercase letter
+\makeatletter
+\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{agu2}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
+\makeatother
+\renewcommand{\thefootnote}{\tt\alph{footnote}}
+\setbeamerfont{footnote}{size=\tiny}
+
+% Inline citations as superscript 1), 2)
+\makeatletter
+\def\@cite#1{\textcolor{agu2}{\tt\textsuperscript{\bf{#1})}}}
+\def\@biblabel#1{\tt\textcolor{agu2}{\bf{#1})}}
+\makeatother
+
+% Colors and size of the bibliography list
+\setbeamercolor{bibliography entry author}{fg=black,bg=white}
+\setbeamerfont{bibliography entry author}{size=\tiny}
+
+%%------------------------------------------------------------------
+%% 10. Misc
+%%------------------------------------------------------------------
+% Allow URLs to break at any character
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{hyperref}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z\do\*\do\-\do\~\do\'\do\"\do\-}
+
+% \stopnavigation / \resumenavigation pause the navigation recording
+% (used to exclude appendix slides from the progress-bar denominator)
+\makeatletter
+\let\oldheadcommand\headcommand
+\newcommand{\stopnavigation}{\addtocontents{nav}{\string\let\string\headcommand\string\@gobble}}
+\newcommand{\resumenavigation}{\addtocontents{nav}{\string\let\string\headcommand\string\oldheadcommand}}
+\makeatother
+
+\endinput

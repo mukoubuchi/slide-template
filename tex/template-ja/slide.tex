@@ -1,0 +1,217 @@
+% !TEX program = xelatex
+%%==================================================================
+%% slide.tex --- 発表スライドテンプレート (16:9)
+%% 使い方: このフォルダごとコピーし、「発表情報」ブロックを書き換える
+%% ビルド: latexmk (XeLaTeX + bibtex)
+%%==================================================================
+% beamer が xcolor を読み込む前に silence を有効化し xcolor 警告を抑制
+\RequirePackage{silence}
+\WarningFilter{xcolor}{Package option `hyperref'}
+\documentclass[aspectratio=169, 10pt, fleqn, hyperref={pdfpagelabels=false, bookmarks=false, hyperfootnotes=false}]{beamer}
+
+\usepackage{slidestyle}
+
+%%------------------------------------------------------------------
+%% 発表情報 (発表ごとにここを書き換える)
+%%------------------------------------------------------------------
+\title{発表タイトル}
+\subtitle{\fontsize{10pt}{0pt}\selectfont {\DDASH}サブタイトル{\DDASH}}
+\author{氏名}
+\institute{} % 表紙は所属テキストの代わりにロゴを表示 (下の \titlegraphic)
+\date{\footnotesize{\today}}
+\renewcommand{\aauEmail}{メールアドレス} % ヘッダのメールアドレス。自分のアドレス (@ を含む) に置換すると mailto リンクが有効になり、プレースホルダのままならリンク無効
+\renewcommand{\aauLogo}{Figs/gugugaga-icon.png}    % 右上サークル内のロゴ
+\titlegraphic{\includegraphics[height=1.5em]{Figs/gugugaga-logo.png}} % 所属ロゴ
+\renewcommand{\aauEvent}{イベント名}           % 表紙最下部に「# イベント名」と表示
+
+%%==================================================================
+\begin{document}
+
+\addtocounter{framenumber}{-1} % タイトルスライドをページ数に含めない
+
+%% タイトル
+\begin{frame}[label=title]
+  \titlepage
+\end{frame}
+
+%% \section を書くと目次スライドが自動挿入される (slidestyle.sty §3)
+\section{強調マクロと引用}
+
+\begin{frame}[label=macros]
+  \frametitle{強調マクロと引用}
+  \begin{itemize}
+    \item 強調: \BC{アクセント色の太字}・\BR{赤の太字}・\ub{赤太字}・\uk{打ち消し}
+    \item 矢印: 順接 {\YA} こうなる
+    \item バッジ: \rei~例を示す \chu~注意を促す \mon~問いを立てる \kotae~答える
+    \item キー操作: \keystroke{Ctrl}+\keystroke{C}
+    \item 引用は上付き番号になる:
+      要求工学のロードマップ\cite{nuseibeh2000},
+      ウォーターフォールの原典\cite{royce1970},
+      GORE のガイドツアー\cite{vanlamsweerde2001}
+    \item ジャンプボタン: \GO{title}{タイトルへ}
+  \end{itemize}
+\end{frame}
+
+\section{ブロックと図}
+
+\begin{frame}[label=blocks]
+  \frametitle{ブロック環境}
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{定理 (block)}
+        標準のブロック
+      \end{block}
+      \begin{alertblock}{注意 (alertblock)}
+        強調のブロック
+      \end{alertblock}
+      \begin{exampleblock}{例 (exampleblock)}
+        例示のブロック
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exercise}{小演習 (exercise)}
+        演習用のブロック
+      \end{exercise}
+      \begin{assignment}{課題 (assignment)}
+        課題用のブロック
+      \end{assignment}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% ゴールグラフを段階表示で説明する (\onslide で 7 段階に分けて徐々に完成させる)
+%% ノードは tikzpicture 内でのみ黒枠の楕円に上書き (既定は赤グラデーション)
+\begin{frame}[label=goalgraph]
+  \frametitle{TikZ 描画例}
+  \begin{itemize}
+  \item ゴールグラフは次の手順で構築する。
+  \begin{enumerate}
+    \onslide<2->{%
+    \PB{\item 顧客のニーズから\BC{ルートゴール} $g_1$ を定式化する\footnote{ゴールは「達成された状態」を表す}}}
+    \onslide<3->{%
+    \PB{\item ゴールを子ゴールへ\BC{分解}する\footnote{角度マークは分解のまとまりを表す}。
+        具体的なゴールになるまで分解を繰り返す}}
+    \onslide<7->{%
+    \PB{\item 十分に分解された\BC{リーフゴール}の中から要求を選択する}}
+  \end{enumerate}
+  \end{itemize}
+  \centering
+  \begin{tikzpicture}[scale=0.8, node distance=2em, terminal/.style={ellipse, draw=black, very thick}]
+    % ノード (説明中のステップは赤いグラデーションで強調)
+    \onslide<2->{
+    \alt<2>{\node [terminal, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g1) {$g_1$};}{\node [terminal] (g1) {$g_1$};}
+    }
+    \onslide<3->{
+      \node [terminal, below left=2em and -4em of g1] (g3) {$g_3$};
+    }
+    \onslide<3->{
+      \node [terminal, below right=2em and -4em of g1] (g2) {$g_2$};
+    }
+    \onslide<6->{
+    \alt<7->{\node [terminal, below left=2em and -4em of g3, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g6) {$g_6$};}{\node [terminal, below left=2em and -4em of g3] (g6) {$g_6$};}
+    }
+    \onslide<5->{
+    \alt<7->{\node [terminal, below right=2em and -4em of g3, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g5) {$g_5$};}{\node [terminal, below right=2em and -4em of g3] (g5) {$g_5$};}
+    }
+    \onslide<4->{
+    \alt<7->{\node [terminal, below right=2em and -4em of g2, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g4) {$g_4$};}{\node [terminal, below right=2em and -4em of g2] (g4) {$g_4$};}
+    }
+    % エッジ
+    \onslide<3->{
+    \path [line] (g1) -- (g3);
+    \path [line] (g1) -- (g2);
+    }
+    \onslide<6->{
+    \path [line] (g3) -- (g6);
+    }
+    \onslide<5->{
+    \path [line] (g3) -- (g5);
+    }
+    \onslide<4->{
+    \path [line] (g2) -- (g4);
+    }
+    % 分解の角度マーク
+    \onslide<3->{
+    \pic [draw, angle radius=0.5cm] {angle = g2--g1--g3};
+    }
+  \end{tikzpicture}\\
+  \onslide<6->{\FC{ゴールグラフ}}
+  % 吹き出し (overlay なので本体のレイアウトに影響しない)
+  \begin{tikzpicture}[remember picture, overlay]
+    \only<7->{
+    \path[color=white, multiple absolute pointers={
+           [fill=agu2, above left=1.3em and 0.2em of g4]
+           {[fill=agu2]g4.north west, [fill=agu2]g5.north west, [fill=agu2]g6.north west}{\footnotesize リーフゴール}
+     }];
+   }
+   \only<2->{
+   \node[rectangle callout, color=white, fill=agu2, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize ルートゴール};
+   }
+  \end{tikzpicture}
+\end{frame}
+
+\section{復習}
+
+%% 定義スライドの例: 用語の導入 / 定義ブロック / 構成要素 / ポイント
+\begin{frame}[label=dmproblem]
+  \frametitle{意思決定問題}
+  \begin{itemize}
+    \item \BC{意思決定問題}は 3 つ組として定義される
+  \end{itemize}
+  \begin{block}{意思決定問題 (Decision Making Problem)}
+    $D \coloneqq (A, \varTheta, c)$
+  \end{block}
+  \begin{itemize}
+    \item[]
+    \begin{itemize}
+      \item $A$: \BC{選択肢} (Alternative)。選び得る選択の集合
+      \item $\varTheta$: \BC{自然の状態} (State of Nature)。将来起こり得る事象の集合
+      \item $c$: \BC{結果} (consequence)。次で定義される関数:
+        $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
+    \end{itemize}
+  \end{itemize}
+  \begin{alertblock}{Point}
+    $A$ は変えられるが $\varTheta$ は変えられない
+  \end{alertblock}
+\end{frame}
+
+%% 手順スライドの例: 番号付きステップ / ポイント
+\begin{frame}[label=dmprocedure]
+  \frametitle{意思決定の手順}
+  \begin{enumerate}
+    \item \BC{目標設定} (Goal Setting): 選択肢間の選好を評価できるよう
+      意思決定の目標を明確にする
+    \item \BC{基準選択} (Criteria Selection): 最良の選択肢を選べるよう
+      最良の基準を選択する
+  \end{enumerate}
+  \begin{alertblock}{Point}
+    各選択肢 $a \in A$ の選好は目標によって変わる
+  \end{alertblock}
+\end{frame}
+
+%% 参考文献 (\cite した文献だけが載る)
+\begin{frame}[label=bib]%[allowframebreaks] % 収まらない時は複数頁に分割
+  \frametitle{References}
+  \beamertemplatetextbibitems
+      {\tiny
+        \bibliographystyle{plain}
+        \bibliography{references}
+      }
+\end{frame}
+
+%% 締め
+\begin{frame}
+  \vspace{2.5\baselineskip} % ヘッダ帯の高さ分だけ上余白を加算して視覚的中央に
+  \vfill
+  \begin{center}
+  \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % 筆記体 (macOS 標準)
+    {\tt Thanks for listening\EX}
+  \end{center}
+  \vfill
+\end{frame}
+
+%% 区切り用白紙スライド
+%\begin{frame}[plain]
+%\end{frame}
+
+\end{document}

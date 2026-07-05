@@ -1,0 +1,713 @@
+%%==================================================================
+%% slidestyle.sty --- スライド共通設定 (XeLaTeX + Beamer)
+%%
+%% 構成:
+%%   1. フォント (欧文・和文)
+%%   2. 配色
+%%   3. Beamer テーマ・テンプレート
+%%   4. Beamer 要素のフォント
+%%   5. TikZ (ライブラリ・スタイル・チャート)
+%%   6. 数式
+%%   7. 強調・バッジ等のマクロ
+%%   8. ブロック環境・箇条書き
+%%   9. 脚注・参考文献
+%%  10. その他 (URL 折り返し・ナビゲーション制御)
+%%==================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{slidestyle}[2026/07/05 v2.2 common slide style]
+
+%%------------------------------------------------------------------
+%% 1. フォント
+%%------------------------------------------------------------------
+\usefonttheme{professionalfonts}
+\usepackage{fontspec}
+\usepackage{xeCJK} % 和文組版 (禁則・和欧文間処理)
+
+% 和文・欧文とも丸ゴシック。Rounded-X Mgen+ が無い環境ではヒラギノ丸ゴにフォールバック
+\IfFontExistsTF{Rounded-X Mgen+ 1cp}{%
+  \setmainfont{Rounded-X Mgen+ 1cp}%
+  \setsansfont{Rounded-X Mgen+ 1cp}%
+  \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+  \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+}{%
+  \setmainfont{Hiragino Maru Gothic ProN}%
+  \setsansfont{Hiragino Maru Gothic ProN}%
+  \setCJKmainfont{Hiragino Maru Gothic ProN}%
+  \setCJKsansfont{Hiragino Maru Gothic ProN}%
+}
+\IfFontExistsTF{Comic Sans MS}{%
+  \setmonofont{Comic Sans MS}%
+}{%
+  \setmonofont{Menlo}%
+}
+\IfFontExistsTF{Rounded-X Mgen+ 1mn}{%
+  \setCJKmonofont{Rounded-X Mgen+ 1mn}%
+}{%
+  \setCJKmonofont{Hiragino Maru Gothic ProN}%
+}
+
+% 丸ゴシック系フォントにはイタリック体がないため、m/it → m/n にフォールバック宣言
+% (参考文献リストの {\em ...} 等で出る "Font shape undefined" 警告を抑制)
+\AtBeginDocument{%
+  \DeclareFontShape{\encodingdefault}{\rmdefault}{m}{it}{<->ssub*\rmdefault/m/n}{}%
+  \DeclareFontShape{\encodingdefault}{\sfdefault}{m}{it}{<->ssub*\sfdefault/m/n}{}%
+}
+
+\usepackage{upgreek}      % 直立ギリシャ文字 (\mathup で使用)
+\usepackage{anyfontsize}  % 任意サイズの \fontsize
+
+%%------------------------------------------------------------------
+%% 2. 配色
+%%------------------------------------------------------------------
+\definecolor{agu}{RGB}{5,44,3}        % 基調色 (深緑)
+\definecolor{agu2}{RGB}{64,224,208}   % アクセント (ターコイズ)
+\definecolor{oxford}{RGB}{0,33,71}
+\definecolor{harvard}{RGB}{165,27,47}
+\definecolor{princeton}{RGB}{255,102,0}
+\definecolor{berkeley}{RGB}{245,170,0}
+\definecolor{kenbridge}{RGB}{153,204,204}
+\definecolor{stanford}{RGB}{196,30,58}
+\definecolor{tufts}{RGB}{102,153,204}
+\definecolor{yale}{RGB}{15,77,146}
+\definecolor{gaidai}{RGB}{247,81,167}
+\definecolor{example}{RGB}{5,134,66}  % example ブロック用
+% 円グラフ・棒グラフ用
+\definecolor{rosso}{RGB}{220,57,18}
+\definecolor{giallo}{RGB}{255,153,0}
+\definecolor{blu}{RGB}{102,140,217}
+\definecolor{verde}{RGB}{16,150,24}
+\definecolor{viola}{RGB}{153,0,153}
+
+%%------------------------------------------------------------------
+%% 3. Beamer テーマ・テンプレート
+%%    タイトルページ・ヘッダ・進捗サークルは AAU Simple Beamer Theme
+%%    v1.3.2 (Copyright (c) 2014 Jesper Kjær Nielsen, GPL v3+) を
+%%    統合・簡素化したもの
+%%------------------------------------------------------------------
+\RequirePackage{calc} % 長さ演算 (ヘッダ寸法・フレームタイトル幅)
+
+\usecolortheme[named=agu]{structure}
+\setbeamercovered{transparent}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+% frametitle の白文字/基調色地 (旧 beamerthemesplit が与えていた配色)
+\setbeamercolor{frametitle}{fg=white,bg=agu}
+\setbeamercolor{framesubtitle}{fg=white}
+\setbeamercolor{primary}{fg=white,bg=agu}
+\setbeamercolor{secondary}{fg=white,bg=agu2}
+\setbeamercolor{logo}{bg=white}
+\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=agu2,bg=structure.fg}
+
+\setbeamertemplate{navigation symbols}{} % ナビゲーション記号は非表示
+\setbeamertemplate{footline}{}           % フッタなし (ヘッダのみ使用)
+\setbeamertemplate{bibliography item}[text] % 参考文献マークは番号
+
+% カスタマイズ用フック (本体で \renewcommand して変更する)
+\providecommand{\aauEmail}{メールアドレス}         % ヘッダのメールアドレス (既定はリンク無効のプレースホルダ)
+\providecommand{\aauEmailIcon}{Figs/email}        % メールアイコン画像
+\providecommand{\aauLogo}{Figs/agu}               % 右上サークル内のロゴ画像
+\providecommand{\aauEvent}{}                      % 表紙最下部の「# イベント名」(空なら非表示)
+
+% ヘッダのメール表記: \aauEmail が実アドレス (@ を含む) のときだけ mailto リンクを張る
+% (「メールアドレス」等のプレースホルダのままならリンク無効のただの文字列)
+\newcommand{\aauEmailMailto}[1]{\href{mailto:\aauEmail}{#1}}
+\ExplSyntaxOn
+\NewDocumentCommand { \aauEmailHref } { m }
+  {
+    \str_set:Nx \l_tmpa_str { \aauEmail }
+    \str_if_in:NnTF \l_tmpa_str { @ }
+      { \aauEmailMailto { #1 } }
+      { #1 }
+  }
+\ExplSyntaxOff
+
+\makeatletter
+% ヘッダ寸法 (この時点の frametitle フォントの行送りを基準にする)
+\newlength{\beamer@height}
+\usebeamerfont{frametitle}
+\setlength{\beamer@height}{2.5\baselineskip}
+\reset@font
+% ヘッダ帯の高さ (本文から参照する公開名。帯は本文領域に重なって描画される)
+\newlength{\aauHeaderHeight}
+\setlength{\aauHeaderHeight}{\beamer@height}
+\newlength{\beamer@logoradius}
+\setlength{\beamer@logoradius}{0.95\beamer@height/2}
+\newlength{\beamer@borderwidth}
+\setlength{\beamer@borderwidth}{2mm}
+\newlength{\beamer@logoinnerradius}
+\setlength{\beamer@logoinnerradius}{1.1\beamer@logoradius}
+\newlength{\beamer@logoouterradius}
+\setlength{\beamer@logoouterradius}{\beamer@logoinnerradius+\beamer@borderwidth}
+\newlength{\beamer@counterradius}
+\setlength{\beamer@counterradius}{\beamer@logoinnerradius/2+\beamer@logoouterradius/2}
+
+% タイトルページ (構成: タイトルボックス / 日付 / 著者 / 所属テキスト / 所属ロゴ / # イベント名)
+\newlength{\aau@titleheight}
+\setbeamertemplate{title page}{%
+  % イベント枠がある場合はその高さの分だけ本文領域を上に詰める
+  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2.5em}}%
+  \begin{minipage}[c][\aau@titleheight][c]{\textwidth}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[wd=\textwidth,center,sep=\baselineskip,rounded=true,shadow=true]{frametitle}
+      \fontsize{18pt}{13pt}\selectfont{\bf\inserttitle}\\
+      {\insertsubtitle}
+    \end{beamercolorbox}\vspace*{\baselineskip}
+    \begin{center}
+      {\usebeamerfont{date}\insertdate}\vspace*{\baselineskip}
+
+      {\usebeamerfont{author}\insertauthor}\vspace*{0.5\baselineskip}
+
+      {\usebeamerfont{institute}\insertinstitute}
+
+      {\inserttitlegraphic}
+    \end{center}
+    \vfill
+  \end{minipage}%
+  % イベント名: 文字長に応じて伸縮する濃緑の枠 (白文字, 下端はスライド下端に一致)
+  \ifdefempty{\aauEvent}{}{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[fill=agu, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
+        at (current page.south) {\usebeamerfont{author}\aauEvent};
+    \end{tikzpicture}}
+}
+
+% ヘッダ (著者・メール・タイトルの帯 + 背景)
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=1.0\paperwidth,ht=2.25ex,dp=1ex,left]{headfoot}%
+      \usebeamerfont{section in head/foot}\hspace*{3.5ex}%
+      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{agu2}{\aauEmail}}) \ |\ %
+              \insertshorttitle%
+  \end{beamercolorbox}%
+  \aauheaderbackground%
+}
+
+% フレームタイトル (右上のロゴを避けた幅で組む)
+\setbeamertemplate{frametitle}{%
+  \ifx\insertframesubtitle\@empty%
+  \begin{minipage}[c][\beamer@height][c]{\textwidth-1.5\beamer@logoouterradius}
+    {\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle\par}%
+  \end{minipage}
+  \else
+  \begin{minipage}[t][\beamer@height][t]{\textwidth-1.5\beamer@logoouterradius}
+    {\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle\par}%
+    {\usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle\par}%
+  \end{minipage}
+  \fi
+}
+
+% ヘッダ背景: 基調色の帯 + 右上のロゴサークル + 進捗アークとページ番号
+\newcommand{\aauheaderbackground}{%
+  \begin{tikzpicture}[overlay]
+    \coordinate (UL) at (0,0);                     % スライド左上
+    \coordinate (HLR) at (\paperwidth,-\beamer@height); % ヘッダ右下
+    \coordinate (logopos) at ([shift={(-\beamer@logoouterradius-\beamer@borderwidth,0.5\beamer@height)}] HLR);
+    {\usebeamercolor{AAUsimple}%
+      \usebeamercolor{normal text}%
+      \draw[draw=none,fill=agu] (UL) rectangle (HLR);
+      \fill[fill=agu] (logopos) circle (\beamer@logoouterradius);
+      \fill[fill=normal text.bg] (logopos) circle (\beamer@logoinnerradius);
+      % ロゴは白円でクリップ (正方形画像でも角がリングにはみ出さない)
+      \begin{scope}
+        \clip (logopos) circle (\beamer@logoinnerradius);
+        \node at (logopos) {\includegraphics[width=2\beamer@logoradius]{\aauLogo}};
+      \end{scope}
+      % 進捗アーク (フレーム番号 / 総フレーム数)
+      \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
+      \draw[color=agu2,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
+      \fill[fill=white] ([shift={(\progress:\beamer@counterradius)}] logopos) circle (0.5\beamer@borderwidth);
+      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{agu}\insertframenumber}};
+    }
+  \end{tikzpicture}%
+}
+\makeatother
+
+% 箇条書き・目次のマーカー
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{itemize subitem}[ball] % 2 段目は丸玉マーカー
+\setbeamertemplate{sections/subsections in toc}[ball]
+\setbeamercolor{item projected}{fg=white,bg=agu}
+
+% ブロックの配色
+\setbeamercolor{block title}{fg=white,bg=blue}
+\setbeamercolor{block title alerted}{fg=white,bg=red}
+\setbeamercolor{block title example}{fg=white,bg=example}
+\setbeamercolor{block body}{use=block title,bg=block title.bg!5}
+\setbeamercolor{block body alerted}{use=block title alerted,bg=block title alerted.bg!5}
+\setbeamercolor{block body example}{use=block title example,bg=block title example.bg!5}
+
+% goto ボタンの配色
+\setbeamercolor{button}{bg=agu2,fg=white}
+
+% 目次の深さ (0:chapter, 1:section, 2:subsection, 3:subsubsection)
+\setcounter{tocdepth}{3}
+
+% 目次の section 間隔を詰める
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.7em}{}{}
+\makeatother
+
+% \section ごとに目次スライドを自動挿入
+\AtBeginSection[]
+{\begin{frame}
+    \frametitle{Contents}
+    \tableofcontents[hideothersubsections,sectionstyle=show/shaded]
+\end{frame}}
+
+%%------------------------------------------------------------------
+%% 4. Beamer 要素のフォント
+%%------------------------------------------------------------------
+\setbeamerfont{normal text}{series=\mdseries}
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamerfont{example text}{series=\bfseries}
+\setbeamerfont{structure}{series=\bfseries}
+\setbeamerfont{tiny structure}{series=\bfseries}
+\setbeamerfont{title}{series=\bfseries,size=\fontsize{20pt}{20pt}\selectfont}
+\setbeamerfont{title in head/foot}{series=\mdseries}
+\setbeamerfont{title in sidebar}{series=\bfseries}
+\setbeamerfont{author}{series=\mdseries}
+\setbeamerfont{author in head/foot}{series=\mdseries}
+\setbeamerfont{author in sidebar}{series=\mdseries}
+\setbeamerfont{institute}{series=\mdseries}
+\setbeamerfont{institute in head/foot}{series=\mdseries}
+\setbeamerfont{institute in sidebar}{series=\mdseries}
+\setbeamerfont{date}{series=\mdseries}
+\setbeamerfont{date in head/foot}{series=\mdseries}
+\setbeamerfont{date in sidebar}{series=\mdseries}
+\setbeamerfont{part name}{series=\bfseries}
+\setbeamerfont{section in toc}{series=\bfseries}
+\setbeamerfont{section in head/foot}{series=\bfseries}
+\setbeamerfont{section in sidebar}{series=\bfseries}
+\setbeamerfont{subsection in toc}{series=\mdseries}
+\setbeamerfont{subsection in head/foot}{series=\mdseries}
+\setbeamerfont{subsection in sidebar}{size=\tiny,series=\mdseries}
+\setbeamerfont{headline}{series=\bfseries}
+\setbeamerfont{footline}{series=\bfseries}
+\setbeamerfont{frametitle}{series=\bfseries,size=\fontsize{15pt}{15pt}\selectfont}
+\setbeamerfont{caption}{series=\mdseries}
+\setbeamerfont{button}{series=\bfseries}
+\setbeamerfont{block body}{series=\mdseries}
+\setbeamerfont{block body alerted}{series=\mdseries}
+\setbeamerfont{block body example}{series=\mdseries}
+\setbeamerfont{block title}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{block title alerted}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{block title example}{series=\bfseries,size=\fontsize{11pt}{11pt}\selectfont}
+\setbeamerfont{item}{series=\bfseries}
+\setbeamerfont{item projected}{series=\bfseries}
+\setbeamerfont{enumerate item}{series=\bfseries}
+\setbeamerfont{itemize/enumerate body}{series=\mdseries}
+\setbeamerfont{itemize/enumerate subbody}{series=\mdseries}
+\setbeamerfont{itemize/enumerate subsubbody}{series=\mdseries}
+\setbeamerfont{abstract}{series=\mdseries}
+\setbeamerfont{verse}{series=\mdseries}
+\setbeamerfont{quotation}{series=\mdseries}
+\setbeamerfont{note page}{series=\mdseries}
+\setbeamerfont{section number projected}{series=\bfseries}
+
+%%------------------------------------------------------------------
+%% 5. TikZ
+%%------------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{
+  angles,               % 角度マーク (pic {angle=...})
+  arrows, arrows.meta,
+  automata,
+  calc,
+  chains,
+  decorations.markings, decorations.text,
+  intersections,
+  matrix,
+  patterns,
+  positioning,
+  shadows,
+  shapes,               % geometric / symbols / misc をまとめて
+  shapes.callouts       % 吹き出し
+}
+
+% pgf レイヤ (\pie が background/foreground を使用)
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+% 共通スタイル
+\tikzset{
+  every picture/.append style={remember picture},
+  na/.style={baseline=-.5ex}, % 本文中アンカー用
+  arrow/.style={thick,-latex,font=\sffamily},
+  % フローチャート
+  decision/.style={diamond, very thick, draw=green!50!black!50,
+    top color=white, bottom color=green!50!black!20,
+    text width=3em, text badly centered, inner sep=0pt, minimum size=3em, font=\footnotesize},
+  block/.style={rectangle, very thick, draw=blue!50!black!50,
+    top color=white, bottom color=blue!50!black!20,
+    text width=4em, text centered, rounded corners, font=\footnotesize, minimum height=1em},
+  line/.style={draw=black, -stealth},
+  terminal/.style={ellipse, draw=red!50!black!50, very thick,
+    top color=white, bottom color=red!50!black!20, font=\footnotesize},
+  record/.style={cloud, aspect=2, very thick, text centered, draw=yellow!50!black!50,
+    top color=white, bottom color=yellow!50!black!20, text width=8em, inner sep=-5pt, font=\footnotesize},
+  bomb/.style={starburst, aspect=2, very thick, text centered, draw=red!50!black!50,
+    top color=white, bottom color=yellow!50!black!20, text width=8em, inner sep=1pt, font=\footnotesize},
+  % ゴールグラフ
+  big dot/.style={circle, draw, inner sep=0pt, minimum size=3mm, fill=yellow, font=\footnotesize},
+  input/.style={draw, trapezium, trapezium left angle=60, trapezium right angle=120,
+    line width=1.2pt, fill={rgb:black,1;white,2}, font=\footnotesize},
+  obstacle/.style={draw, trapezium, trapezium left angle=120, trapezium right angle=60,
+    line width=1.2pt, fill={rgb:black,1;white,2}, font=\footnotesize},
+  flash/.style args={#1:#2}{postaction=decorate, font=\footnotesize, decoration={name=markings,
+      mark=at position #1 with {%
+        \draw[fill=#2, line width=.75\pgflinewidth, line cap=round, line join=round]
+        (+\pgflinewidth,+7\pgflinewidth)   -- ++ ( left:+2\pgflinewidth)
+        -- (+-4\pgflinewidth,+-\pgflinewidth) -- ++ (right:+5\pgflinewidth)
+        -- (+-\pgflinewidth,+-7\pgflinewidth) -- ++ (right:+2\pgflinewidth)
+        -- (+4\pgflinewidth,\pgflinewidth)    -- ++ (left:+5\pgflinewidth)
+        -- cycle;}}
+  },
+  % コネクタ
+  connector/.style={-latex, font=\scriptsize},
+  rectangle connector/.style={connector,
+    to path={(\tikztostart) -- ++(#1,0pt) \tikztonodes |- (\tikztotarget) }, pos=0.5},
+  rectangle connector/.default=-2cm,
+  straight connector/.style={connector, to path=--(\tikztotarget) \tikztonodes}
+}
+
+% 本文中の語をノード化して矢印で結ぶ (\SET で印を付け \CON で接続)
+\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=agu2](#1){#2};}
+\newcommand{\SETR}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
+\newcommand{\SETG}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
+\newcommand{\SETB}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
+\newcommand{\SETY}[2]{\tikz[baseline=(#1.base)]\node[na,fill=yellow!20](#1){#2};}
+\newcommand{\CON}[5][thick]{\begin{tikzpicture}[overlay]\path[->,#1](#2) edge [out=#4, in=#5] (#3);\end{tikzpicture}}
+
+% 3 点で挟まれた角の円弧
+\newcommand\myarc[4]{\begin{scope}[very thick]
+    \clip (#1)--(#2)--(#3)--cycle;
+    \draw(#1)circle(#4);\end{scope}}
+
+% 1 つの吹き出しから複数のポインタを出す
+% 使用例: \path[multiple absolute pointers={[fill=agu2, above of=X]{A.north, B.north}{text}}];
+\makeatletter
+\tikzset{
+  expand me/.style={#1},
+  multiple absolute pointers/.style args={#1[#2]#3#4}{
+    insert path={
+      \foreach \qrr@tikz@calloutabsolutepointer in {#3} {
+        \pgfextra
+          \expandafter\pgfutil@ifnextchar\expandafter[%
+          \expandafter\qrr@tikz@parse@calloutabsolutepointer\expandafter{%
+          \expandafter\qrr@tikz@parse@calloutabsolutepointer\expandafter[\expandafter]\expandafter}\qrr@tikz@calloutabsolutepointer\@qrr@tikz@parse@calloutabsolutepointer
+        \endpgfextra
+        node[#2, shape/.expanded=\tikz@shape\space callout, expand me/.expanded=\qrr@tikz@calloutabsolutepointer@options, callout absolute pointer={(\qrr@tikz@calloutabsolutepointer@)}] {#4}
+      }
+      \pgfextra
+        \def\pgf@tempa{#1}
+        \pgfutil@in@*{#1}
+        \ifpgfutil@in@\else
+          \pgfkeysalso{insert path={node[#2] {#4}}}
+        \fi
+      \endpgfextra}}}
+
+\def\qrr@tikz@parse@calloutabsolutepointer[#1]#2\@qrr@tikz@parse@calloutabsolutepointer{%
+  \gdef\qrr@tikz@calloutabsolutepointer@options{#1}%
+  \gdef\qrr@tikz@calloutabsolutepointer@{#2}%
+}
+\makeatother
+
+% 円グラフ・棒グラフ
+\tikzset{
+  chart/.style={
+    legend label/.style={font={\scriptsize},anchor=west,align=left},
+    legend box/.style={rectangle, draw, minimum size=5pt},
+    axis/.style={black,semithick,->},
+    axis label/.style={anchor=east,font={\tiny}},
+  },
+  bar chart/.style={
+    chart,
+    bar width/.code={
+      \pgfmathparse{##1/2}
+      \global\let\bar@w\pgfmathresult
+    },
+    bar/.style={very thick, draw=white},
+    bar label/.style={font={\bf\small},anchor=north},
+    bar value/.style={font={\footnotesize}},
+    bar width=.75,
+  },
+  pie chart/.style={
+    chart,
+    slice/.style={line cap=round, line join=round, very thick, draw=white},
+    pie title/.style={font={\bf}},
+    pie values/.style={font={\footnotesize}},
+    slice type/.style 2 args={
+      ##1/.style={fill=##2},
+      values of ##1/.style={}
+    }
+  }
+}
+
+\newcommand{\pie}[3][]{
+    \begin{scope}[#1]
+    \pgfmathsetmacro{\curA}{90}
+    \pgfmathsetmacro{\r}{1}
+    \def\c{(0,0)}
+    \node[pie title] at (90:1.3) {#2};
+    \foreach \v/\s in{#3}{
+        \pgfmathsetmacro{\deltaA}{\v/100*360}
+        \pgfmathsetmacro{\nextA}{\curA + \deltaA}
+        \pgfmathsetmacro{\midA}{(\curA+\nextA)/2}
+
+        \path[slice,\s] \c
+            -- +(\curA:\r)
+            arc (\curA:\nextA:\r)
+            -- cycle;
+        \pgfmathsetmacro{\d}{max((\deltaA * -(.5/50) + 1) , .5)}
+
+        \begin{pgfonlayer}{foreground}
+        \path \c -- node[pos=\d,pie values,values of \s]{$\v\%$} +(\midA:\r);
+        \end{pgfonlayer}
+
+        \global\let\curA\nextA
+    }
+    \end{scope}
+}
+
+\newcommand{\legend}[2][]{
+    \begin{scope}[#1]
+    \path
+        \foreach \n/\s in {#2}
+            {
+                  ++(0,-10pt) node[\s,legend box] {} +(5pt,0) node[legend label] {\n}
+            }
+    ;
+    \end{scope}
+}
+
+% キーボードのキー表示
+\newcommand*\keystroke[1]{%
+  \tikz[baseline=(key.base)]
+    \node[%
+      draw,
+      fill=white,
+      drop shadow={shadow xshift=0.25ex,shadow yshift=-0.25ex,fill=black,opacity=0.75},
+      rectangle,
+      rounded corners=2pt,
+      inner sep=1pt,
+      line width=0.5pt,
+      font=\scriptsize\sffamily
+    ](key) {#1\strut}
+  ;
+}
+
+%%------------------------------------------------------------------
+%% 6. 数式
+%%------------------------------------------------------------------
+\usepackage{mathtools}
+\usepackage{empheq}
+\usepackage{bm}
+\usepackage{braket}   % \Set
+\usepackage{mathrsfs} % 花文字 \mathscr
+
+\everymath{\displaystyle}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\MIT}[1]{\mbox{\it{#1}}} % Math ITalic
+\newcommand\DEFQE{\rotatebox{180}{$\coloneqq$}}
+\newcommand\DEFEQ{\coloneqq}
+\newcommand\DEFLRA{\vcentcolon\hspace{-0.5pt}\Leftrightarrow}
+\newcommand\DEFSSE{\vcentcolon\hspace{-0.5pt}\subseteq}
+\newcommand*{\Perm}[2]{{}_{#1}P_{#2}} % 順列
+
+% 数式記号の直立体 (\mathup{\alpha} など)
+\DeclareRobustCommand{\mathup}[1]{\begingroup\changegreek\mathrm{#1}\endgroup}
+\DeclareRobustCommand{\mathbfup}[1]{\begingroup\changegreekbf\mathbf{#1}\endgroup}
+\makeatletter
+\def\changegreek{\@for\next:={%
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,kappa,lambda,mu,nu,xi,pi,rho,sigma,%
+  tau,upsilon,phi,chi,psi,omega,varepsilon,vartheta,varpi,varrho,varsigma,varphi}%
+  \do{\expandafter\let\csname\next\expandafter\endcsname\csname\next up\endcsname}}
+\def\changegreekbf{\@for\next:={%
+  alpha,beta,gamma,delta,epsilon,zeta,eta,theta,kappa,lambda,mu,nu,xi,pi,rho,sigma,%
+  tau,upsilon,phi,chi,psi,omega,varepsilon,vartheta,varpi,varrho,varsigma,varphi}%
+  \do{\expandafter\def\csname\next\expandafter\endcsname\expandafter{%
+    \expandafter\bm\expandafter{\csname\next up\endcsname}}}}
+\makeatother
+
+% 数式中の英字変数を CMR 直立系に
+\DeclareSymbolFont{mymathvariables}{T1}{cmr}{m}{n}
+\DeclareSymbolFontAlphabet{\mathnormal}{mymathvariables}
+
+%%------------------------------------------------------------------
+%% 7. 強調・バッジ等のマクロ
+%%------------------------------------------------------------------
+\usepackage{pifont}           % \ding
+\usepackage[normalem]{ulem}   % \sout (打ち消し線)
+
+% 強調
+\newcommand{\BC}[1]{\textcolor{agu2}{\bf #1}}       % Bold Color
+\newcommand{\BR}[1]{\textcolor{red}{\bf #1}}        % Bold Red
+\newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (赤太字)
+\newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % 赤の打ち消し線
+
+% 矢印記号
+\newcommand{\YA}{\textcolor{agu2}{\ding{220}}}
+\newcommand{\WYA}{\textcolor{white}{\ding{220}}}
+\newcommand{\YAA}{\textcolor{agu2}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+
+% 段落ボックス
+\newcommand{\PB}[1]{\parbox{\linewidth}{#1}}                    % 行内改行防止
+\newcommand{\PF}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % 脚注用
+
+% 図キャプション (ターコイズの角丸チップ)
+\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=agu2,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+
+% バッジ
+\newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](例){\textcolor{white}{\bf 例}};}} % exampleblock と同じ緑
+\newcommand{\chu}{\tikz[baseline]{\node[fill=red,anchor=base](注){\textcolor{white}{\bf 注}};}}
+\newcommand{\mon}{\tikz[baseline]{\node[fill=agu2,anchor=base](問){\textcolor{white}{\bf 問}};}}
+\newcommand{\hatten}{\tikz[baseline]{\node[fill=berkeley,anchor=base](発展){\textcolor{white}{\bf 発展}};}}
+\newcommand{\ari}{\tikz[baseline]{\node[fill=harvard,anchor=base](有){\textcolor{white}{\bf テンプレート有}};}}
+\newcommand{\nashi}{\tikz[baseline]{\node[fill=kenbridge,anchor=base](無){\textcolor{white}{\bf テンプレート無}};}}
+\newcommand{\hoshin}{\tikz[baseline]{\node[fill=oxford,anchor=base](方針){\textcolor{white}{\bf 方針}};}}
+\newcommand{\kotae}{\tikz[baseline]{\node[fill=berkeley,anchor=base](答){\textcolor{white}{\bf 答}};}}
+\newcommand{\fukushu}{\tikz[baseline]{\node[fill=tufts,anchor=base](復習){\textcolor{white}{\bf 復習}};}}
+
+% enumerate の丸数字を \ref で参照する
+\newcommand\circref[1]{%
+  \usebeamercolor{enumerate item}%
+  \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
+  \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf\ref{#1}};%
+}
+\newcommand\circnum[1]{%
+  \usebeamercolor{enumerate item}%
+  \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
+  \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf #1};%
+}
+\newcommand\tritem{{\footnotesize$\blacktriangleright$}}
+
+% ダッシュ
+\newcommand\DASH{\textendash}
+\newcommand\DDASH{\textemdash}
+
+% 傾いたびっくりマーク
+\newcommand{\EX}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\EXW}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\EQ}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
+
+% ラベル付きフレームへのジャンプボタン
+\newcommand{\GO}[2]{\raisebox{-0ex}{\hyperlink{#1}{\beamergotobutton{#2}}}}
+
+% 相互参照
+\newcommand{\tabref}[1]{{\bf 表\ref{#1}}}
+\newcommand{\equref}[1]{式(\ref{#1})}
+\newcommand{\figref}[1]{{\bf 図\ref{#1}}}
+\newcommand{\secref}[1]{\ref{#1}節}
+\newcommand{\secrefto}[1]{\ding{42}~\ref{#1}節}
+
+% 表タイトル文字の字下げ
+\newcommand{\sage}[1]{\raisebox{-1pt}{#1}}
+
+%%------------------------------------------------------------------
+%% 8. ブロック環境・箇条書き・表
+%%------------------------------------------------------------------
+% 小演習用ブロック (オレンジ)
+\newenvironment<>{exercise}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=princeton}%
+  \begin{block}#2{#1}}{\end{block}}
+
+% 課題用ブロック (黄)
+\newenvironment<>{assignment}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=berkeley}%
+  \begin{block}#2{#1}}{\end{block}}
+
+% 箇条書きの左マージン・項目間スペース
+\setlength{\leftmargini}{1em}
+\setbeamertemplate{itemize/enumerate body begin}{%
+  \setlength{\leftmargini}{0pt}%
+  \setlength{\parsep}{0pt}%
+}
+
+% ブロック内の箇条書きマージン
+\makeatletter
+\addtobeamertemplate{block begin}{%
+\def\@listi{\leftmargin3em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\addtobeamertemplate{block example begin}{%
+\def\@listi{\leftmargin2em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\addtobeamertemplate{block alerted begin}{%
+\def\@listi{\leftmargin2em
+  \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+  \parsep 0\p@
+  \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+}{}
+\makeatother
+
+% beamer には \labelenumi が未定義
+\def\labelenumi{\theenumi}
+
+% \fbox の枠・余白なし
+\fboxrule=0pt
+\fboxsep=0pt
+
+% 表: 太い罫線 (\whline と列指定子 I)
+\usepackage{array}
+\newcolumntype{I}{!{\vrule width 3\arrayrulewidth}}
+\newlength\savedwidth
+\newcommand\whline{%
+  \noalign{\xdef\origarrayrulewidth{\the\arrayrulewidth}%
+  \global\arrayrulewidth 3\arrayrulewidth}%
+  \hline%
+  \noalign{\global\arrayrulewidth\origarrayrulewidth}%
+}
+
+%%------------------------------------------------------------------
+%% 9. 脚注・参考文献
+%%------------------------------------------------------------------
+\usepackage{fourier-orns} % 脚注マーク用の飾り記号 (\textxswdown)
+\usepackage{nccfoots}     % \Footnote 等
+
+% 脚注マークを剣マーク + 英小文字に
+\makeatletter
+\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{agu2}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
+\makeatother
+\renewcommand{\thefootnote}{\tt\alph{footnote}}
+\setbeamerfont{footnote}{size=\tiny}
+
+% 本文中の引用を上付き 1), 2) 形式に
+\makeatletter
+\def\@cite#1{\textcolor{agu2}{\tt\textsuperscript{\bf{#1})}}}
+\def\@biblabel#1{\tt\textcolor{agu2}{\bf{#1})}}
+\makeatother
+
+% 参考文献リストの配色・サイズ
+\setbeamercolor{bibliography entry author}{fg=black,bg=white}
+\setbeamerfont{bibliography entry author}{size=\tiny}
+
+%%------------------------------------------------------------------
+%% 10. その他
+%%------------------------------------------------------------------
+% URL をどの文字でも折り返せるように
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{hyperref}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks%
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z\do\*\do\-\do\~\do\'\do\"\do\-}
+
+% \stopnavigation / \resumenavigation でナビゲーション記録を一時停止
+% (補遺スライドをプログレスバーの分母から除くときに使用)
+\makeatletter
+\let\oldheadcommand\headcommand
+\newcommand{\stopnavigation}{\addtocontents{nav}{\string\let\string\headcommand\string\@gobble}}
+\newcommand{\resumenavigation}{\addtocontents{nav}{\string\let\string\headcommand\string\oldheadcommand}}
+\makeatother
+
+\endinput

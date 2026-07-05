@@ -1,0 +1,21 @@
+# LaTeX build artifacts
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# macOS
+.DS_Store
+
+# Bob agent workspace
+.bob/

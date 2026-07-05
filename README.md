@@ -1,0 +1,48 @@
+# slide-template
+
+XeLaTeX + Beamer presentation slide templates (16:9) with a dark-green theme,
+a header band, and a circular progress indicator in the top-right corner.
+
+| Directory | Description |
+| --- | --- |
+| [`tex/template-ja/`](tex/template-ja/) | Japanese template (README and comments in Japanese) |
+| [`tex/template-en/`](tex/template-en/) | English template, frame-for-frame parallel to the Japanese one |
+
+## Quick start
+
+```sh
+cd tex/template-en   # or tex/template-ja
+latexmk              # build slide.pdf with XeLaTeX + bibtex
+latexmk -c           # remove intermediate files
+```
+
+To start a new talk, copy the whole template folder and edit the
+"presentation info" block at the top of `slide.tex`. See each template's
+README for details.
+
+## Requirements
+
+- TeX Live (XeLaTeX and `latexmk`)
+- Fonts: uses **Rounded-X Mgen+** if installed, otherwise falls back to
+  **Hiragino Maru Gothic ProN** (bundled with macOS). The monospace font
+  falls back from Comic Sans MS to Menlo. On non-macOS systems, adjust §1
+  of `slidestyle.sty` to fonts available on your machine
+
+## Features
+
+- Title page with a rounded title box, affiliation logo, and an optional
+  "# event name" ribbon
+- Header with author, e-mail, and title; the e-mail becomes a mailto link
+  only after you replace the placeholder with a real address
+- Progress circle showing the current frame number over an arc
+- Automatic table-of-contents slides at each `\section`
+- Emphasis macros, badges, keystroke rendering, jump buttons, block
+  environments (incl. exercise/assignment), and TikZ samples
+- Citations as superscript numbers; the References frame lists only cited
+  entries
+
+## Credits
+
+The title page, header, and progress circle are merged and simplified from
+the [AAU Simple Beamer Theme](https://github.com/jkjaer/aauLatexTemplates)
+v1.3.2 (© 2014 Jesper Kjær Nielsen, GPL v3+) in §3 of `slidestyle.sty`.

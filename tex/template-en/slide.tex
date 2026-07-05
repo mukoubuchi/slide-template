@@ -1,0 +1,216 @@
+% !TEX program = xelatex
+%%==================================================================
+%% slide.tex --- Presentation slide template (16:9, English)
+%% Usage: Copy this folder and fill in the "Presentation info" block
+%% Build: latexmk (XeLaTeX + bibtex)
+%%==================================================================
+% Suppress xcolor "hyperref option obsolete" warning before beamer loads xcolor
+\RequirePackage{silence}
+\WarningFilter{xcolor}{Package option `hyperref'}
+\documentclass[aspectratio=169, 10pt, fleqn, hyperref={pdfpagelabels=false, bookmarks=false, hyperfootnotes=false}]{beamer}
+
+\usepackage{slidestyle}
+
+%%------------------------------------------------------------------
+%% Presentation info (edit here for each talk)
+%%------------------------------------------------------------------
+\title{Presentation Title}
+\subtitle{\fontsize{10pt}{0pt}\selectfont {\DDASH}Subtitle{\DDASH}}
+\author{Your Name}
+\institute{} % Title page shows logo instead of affiliation text (see \titlegraphic below)
+\date{\footnotesize{\today}}
+\renewcommand{\aauEmail}{Email Address} % e-mail address in header; replace with your real address (containing @) to activate the mailto link — the placeholder stays unlinked
+\renewcommand{\aauLogo}{Figs/gugugaga-icon.png}    % logo inside circle (top-right)
+\titlegraphic{\includegraphics[height=1.5em]{Figs/gugugaga-logo.png}} % affiliation logo
+\renewcommand{\aauEvent}{Event Name}           % shown as "# Event Name" at bottom of title page
+
+%%==================================================================
+\begin{document}
+
+\addtocounter{framenumber}{-1} % exclude title slide from page count
+
+%% Title slide
+\begin{frame}[label=title]
+  \titlepage
+\end{frame}
+
+%% Writing \section inserts a table-of-contents slide automatically (slidestyle.sty §3)
+\section{Macros and Citations}
+
+\begin{frame}[label=macros]
+  \frametitle{Macros and Citations}
+  \begin{itemize}
+    \item Emphasis: \BC{accent bold}, \BR{red bold}, \ub{red bold}, \uk{strikethrough}
+    \item Arrow: sequential {\YA} result
+    \item Badges: \rei~example \chu~caution \mon~question \kotae~answer
+    \item Key: \keystroke{Ctrl}+\keystroke{C}
+    \item Citations: superscript numbers\cite{nuseibeh2000}\cite{royce1970}\cite{vanlamsweerde2001}
+    \item Jump button: \GO{title}{Go to Title}
+  \end{itemize}
+\end{frame}
+
+\section{Blocks and Figures}
+
+\begin{frame}[label=blocks]
+  \frametitle{Block Environments}
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Theorem (block)}
+        Standard block
+      \end{block}
+      \begin{alertblock}{Caution (alertblock)}
+        Alert block
+      \end{alertblock}
+      \begin{exampleblock}{Example (exampleblock)}
+        Example block
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exercise}{Exercise (exercise)}
+        Exercise block
+      \end{exercise}
+      \begin{assignment}{Assignment (assignment)}
+        Assignment block
+      \end{assignment}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%% Goal graph with step-by-step reveal (\onslide splits into 7 steps)
+%% Nodes use black-outline ellipse style (overrides the red-gradient default)
+\begin{frame}[label=goalgraph]
+  \frametitle{TikZ Example}
+  \begin{itemize}
+  \item A goal graph is constructed as follows.
+  \begin{enumerate}
+    \onslide<2->{%
+    \PB{\item Based on customers' needs, the \BC{root goal} $g_1$ is formulated\footnote{A goal represents an achieved state.}}}
+    \onslide<3->{%
+    \PB{\item Goals are \BC{decomposed} into subgoals\footnote{The angle mark denotes a decomposition group.}.
+        Decomposition is repeated until goals become concrete}}
+    \onslide<7->{%
+    \PB{\item Requirements are selected from the well-decomposed \BC{leaf goal}s}}
+  \end{enumerate}
+  \end{itemize}
+  \centering
+  \begin{tikzpicture}[scale=0.8, node distance=2em, terminal/.style={ellipse, draw=black, very thick}]
+    % Nodes (currently explained step highlighted with red gradient)
+    \onslide<2->{
+    \alt<2>{\node [terminal, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g1) {$g_1$};}{\node [terminal] (g1) {$g_1$};}
+    }
+    \onslide<3->{
+      \node [terminal, below left=2em and -4em of g1] (g3) {$g_3$};
+    }
+    \onslide<3->{
+      \node [terminal, below right=2em and -4em of g1] (g2) {$g_2$};
+    }
+    \onslide<6->{
+    \alt<7->{\node [terminal, below left=2em and -4em of g3, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g6) {$g_6$};}{\node [terminal, below left=2em and -4em of g3] (g6) {$g_6$};}
+    }
+    \onslide<5->{
+    \alt<7->{\node [terminal, below right=2em and -4em of g3, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g5) {$g_5$};}{\node [terminal, below right=2em and -4em of g3] (g5) {$g_5$};}
+    }
+    \onslide<4->{
+    \alt<7->{\node [terminal, below right=2em and -4em of g2, draw=red!50!black!50, top color=white, bottom color=red!50!black!20] (g4) {$g_4$};}{\node [terminal, below right=2em and -4em of g2] (g4) {$g_4$};}
+    }
+    % Edges
+    \onslide<3->{
+    \path [line] (g1) -- (g3);
+    \path [line] (g1) -- (g2);
+    }
+    \onslide<6->{
+    \path [line] (g3) -- (g6);
+    }
+    \onslide<5->{
+    \path [line] (g3) -- (g5);
+    }
+    \onslide<4->{
+    \path [line] (g2) -- (g4);
+    }
+    % Decomposition angle mark
+    \onslide<3->{
+    \pic [draw, angle radius=0.5cm] {angle = g2--g1--g3};
+    }
+  \end{tikzpicture}\\
+  \onslide<6->{\FC{Goal graph}}
+  % Callout bubbles (overlay — does not affect body layout)
+  \begin{tikzpicture}[remember picture, overlay]
+    \only<7->{
+    \path[color=white, multiple absolute pointers={
+           [fill=agu2, above left=1.3em and 0.2em of g4]
+           {[fill=agu2]g4.north west, [fill=agu2]g5.north west, [fill=agu2]g6.north west}{\footnotesize leaf goals}
+     }];
+   }
+   \only<2->{
+   \node[rectangle callout, color=white, fill=agu2, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize root goal};
+   }
+  \end{tikzpicture}
+\end{frame}
+
+\section{Review}
+
+%% Definition slide: term intro / definition block / element list / point
+\begin{frame}[label=dmproblem]
+  \frametitle{Decision Making Problem}
+  \begin{itemize}
+    \item \BC{Decision Making Problem} is defined as a three-tuple
+  \end{itemize}
+  \begin{block}{Decision Making Problem}
+    $D \coloneqq (A, \varTheta, c)$
+  \end{block}
+  \begin{itemize}
+    \item[]
+    \begin{itemize}
+      \item $A$: \BC{Alternative}. A set of possible choices
+      \item $\varTheta$: \BC{State of Nature}. A set of possible events in the future
+      \item $c$: \BC{consequence}. A function defined as follows:
+        $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
+    \end{itemize}
+  \end{itemize}
+  \begin{alertblock}{Point}
+    We can change $A$, but cannot $\varTheta$
+  \end{alertblock}
+\end{frame}
+
+%% Procedure slide: numbered steps / point
+\begin{frame}[label=dmprocedure]
+  \frametitle{Decision Making Procedure}
+  \begin{enumerate}
+    \item \BC{Goal Setting}: clarify goals of the decision making in order to
+      evaluate preferences among alternatives
+    \item \BC{Criteria Selection}: choose the best criterion so as to select
+      the best alternative among alternatives
+  \end{enumerate}
+  \begin{alertblock}{Point}
+    The preference of each $a \in A$ varies with goal
+  \end{alertblock}
+\end{frame}
+
+%% References (only cited entries appear)
+\begin{frame}[label=bib]%[allowframebreaks] % use allowframebreaks if it overflows
+  \frametitle{References}
+  \beamertemplatetextbibitems
+      {\tiny
+        \bibliographystyle{plain}
+        \bibliography{references}
+      }
+\end{frame}
+
+%% Closing slide
+\begin{frame}
+  % the header band is drawn over the text area, so reserve its height and
+  % center in the remaining white area (+20pt calibrates Zapfino's ink position)
+  \vspace*{\dimexpr\aauHeaderHeight+20pt\relax}
+  \vfill
+  \begin{center}
+  \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % cursive font (standard on macOS)
+    {\tt Thanks for listening\EX}
+  \end{center}
+  \vfill
+\end{frame}
+
+%% Blank separator slide
+%\begin{frame}[plain]
+%\end{frame}
+
+\end{document}
