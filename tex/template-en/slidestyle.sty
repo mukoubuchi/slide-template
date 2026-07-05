@@ -15,7 +15,7 @@
 %%  10. Misc (URL breaking, navigation control)
 %%==================================================================
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{slidestyle}[2026/07/05 v2.2 common slide style]
+\ProvidesPackage{slidestyle}[2026/07/06 v2.3 common slide style]
 
 %%------------------------------------------------------------------
 %% 1. Fonts
@@ -62,13 +62,36 @@
 %%------------------------------------------------------------------
 %% 2. Colors
 %%------------------------------------------------------------------
-\definecolor{agu}{RGB}{5,44,3}        % base color (dark green)
-\definecolor{agu2}{RGB}{64,224,208}   % accent (turquoise)
+%% -- Theme colors (base themeprimary / accent themeaccent) --------
+%% Switch with \slidetheme{<name>} in the preamble (default: oxford)
+%%   \slidetheme{oxford}    ... Oxford Blue + Cerulean Blue (official palette)
+%%   \slidetheme{agu}       ... Aoyama Gakuin dark green + blue-green (official logo colors)
+%%   \slidetheme{cambridge} ... Cambridge Dark Teal + Cambridge Blue (official palette)
+%%   \slidetheme{mit}       ... MIT Red + Silver Gray (official pair)
+%%   \slidetheme{princeton} ... Black + Princeton Orange (official pair)
+%% To add a theme, just \definecolor <name>Primary and <name>Accent
+\definecolor{oxfordPrimary}{RGB}{0,33,71}       % Oxford Blue (Pantone 282)
+\definecolor{oxfordAccent}{RGB}{73,182,255}     % Oxford Cerulean Blue (official secondary)
+\definecolor{aguPrimary}{RGB}{2,95,61}          % Aoyama Gakuin dark green (official logo #025F3D)
+\definecolor{aguAccent}{RGB}{0,163,132}         % Aoyama Gakuin blue-green (university logo #00A384)
+\definecolor{cambridgePrimary}{RGB}{19,56,68}   % Cambridge Dark Teal (Pantone 547)
+\definecolor{cambridgeAccent}{RGB}{142,232,216} % Cambridge Blue (Pantone 7471)
+\definecolor{mitPrimary}{RGB}{163,31,52}        % MIT Red (PMS 201)
+\definecolor{mitAccent}{RGB}{138,139,140}       % MIT Silver Gray (PMS 424)
+\definecolor{princetonPrimary}{RGB}{0,0,0}      % Princeton Black
+\definecolor{princetonAccent}{RGB}{231,117,0}   % Princeton Orange (PMS 158)
+\newcommand{\slidetheme}[1]{%
+  \colorlet{themeprimary}{#1Primary}%
+  \colorlet{themeaccent}{#1Accent}%
+}
+\slidetheme{oxford}
+
+%% -- General named colors ------------------------------------------
 \definecolor{oxford}{RGB}{0,33,71}
 \definecolor{harvard}{RGB}{165,27,47}
 \definecolor{princeton}{RGB}{255,102,0}
 \definecolor{berkeley}{RGB}{245,170,0}
-\definecolor{kenbridge}{RGB}{153,204,204}
+\definecolor{cambridge}{RGB}{153,204,204}
 \definecolor{stanford}{RGB}{196,30,58}
 \definecolor{tufts}{RGB}{102,153,204}
 \definecolor{yale}{RGB}{15,77,146}
@@ -89,16 +112,19 @@
 %%------------------------------------------------------------------
 \RequirePackage{calc} % length arithmetic (header dimensions, frame title width)
 
-\usecolortheme[named=agu]{structure}
+% Reference themeprimary by name (\usecolortheme[named=...] freezes the color
+% at load time, which would break \slidetheme switching; setbeamercolor
+% resolves at use time)
+\setbeamercolor*{structure}{fg=themeprimary}
 \setbeamercovered{transparent}
 \setbeamertemplate{blocks}[rounded][shadow=true]
 % white-on-base-color frametitle (the colors the old beamerthemesplit used)
-\setbeamercolor{frametitle}{fg=white,bg=agu}
+\setbeamercolor{frametitle}{fg=white,bg=themeprimary}
 \setbeamercolor{framesubtitle}{fg=white}
-\setbeamercolor{primary}{fg=white,bg=agu}
-\setbeamercolor{secondary}{fg=white,bg=agu2}
+\setbeamercolor{primary}{fg=white,bg=themeprimary}
+\setbeamercolor{secondary}{fg=white,bg=themeaccent}
 \setbeamercolor{logo}{bg=white}
-\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=agu2,bg=structure.fg}
+\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=themeaccent,bg=structure.fg}
 
 \setbeamertemplate{navigation symbols}{} % hide navigation symbols
 \setbeamertemplate{footline}{}           % no footer (header only)
@@ -172,7 +198,7 @@
   % bottom edge flush with the bottom of the slide)
   \ifdefempty{\aauEvent}{}{%
     \begin{tikzpicture}[remember picture, overlay]
-      \node[fill=agu, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
+      \node[fill=themeprimary, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
         at (current page.south) {\usebeamerfont{author}\aauEvent};
     \end{tikzpicture}}
 }
@@ -181,7 +207,7 @@
 \setbeamertemplate{headline}{%
   \begin{beamercolorbox}[wd=1.0\paperwidth,ht=2.25ex,dp=1ex,left]{headfoot}%
       \usebeamerfont{section in head/foot}\hspace*{3.5ex}%
-      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{agu2}{\aauEmail}}) \ |\ %
+      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{themeaccent}{\aauEmail}}) \ |\ %
               \insertshorttitle%
   \end{beamercolorbox}%
   \aauheaderbackground%
@@ -210,8 +236,8 @@
     \coordinate (logopos) at ([shift={(-\beamer@logoouterradius-\beamer@borderwidth,0.5\beamer@height)}] HLR);
     {\usebeamercolor{AAUsimple}%
       \usebeamercolor{normal text}%
-      \draw[draw=none,fill=agu] (UL) rectangle (HLR);
-      \fill[fill=agu] (logopos) circle (\beamer@logoouterradius);
+      \draw[draw=none,fill=themeprimary] (UL) rectangle (HLR);
+      \fill[fill=themeprimary] (logopos) circle (\beamer@logoouterradius);
       \fill[fill=normal text.bg] (logopos) circle (\beamer@logoinnerradius);
       % clip the logo to a white circle (keeps square images from
       % sticking out of the ring)
@@ -221,9 +247,9 @@
       \end{scope}
       % progress arc (frame number / total frames)
       \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
-      \draw[color=agu2,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
+      \draw[color=themeaccent,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
       \fill[fill=white] ([shift={(\progress:\beamer@counterradius)}] logopos) circle (0.5\beamer@borderwidth);
-      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{agu}\insertframenumber}};
+      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{themeprimary}\insertframenumber}};
     }
   \end{tikzpicture}%
 }
@@ -233,7 +259,7 @@
 \setbeamertemplate{enumerate items}[circle]
 \setbeamertemplate{itemize subitem}[ball] % second-level marker: shaded ball
 \setbeamertemplate{sections/subsections in toc}[ball]
-\setbeamercolor{item projected}{fg=white,bg=agu}
+\setbeamercolor{item projected}{fg=white,bg=themeprimary}
 
 % Block colors
 \setbeamercolor{block title}{fg=white,bg=blue}
@@ -244,7 +270,7 @@
 \setbeamercolor{block body example}{use=block title example,bg=block title example.bg!5}
 
 % goto button colors
-\setbeamercolor{button}{bg=agu2,fg=white}
+\setbeamercolor{button}{bg=themeaccent,fg=white}
 
 % TOC depth (0: chapter, 1: section, 2: subsection, 3: subsubsection)
 \setcounter{tocdepth}{3}
@@ -381,7 +407,7 @@
 
 % Turn words in the text into nodes and connect them with arrows
 % (mark with \SET, connect with \CON)
-\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=agu2](#1){#2};}
+\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=themeaccent](#1){#2};}
 \newcommand{\SETR}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
 \newcommand{\SETG}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
 \newcommand{\SETB}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
@@ -394,7 +420,7 @@
     \draw(#1)circle(#4);\end{scope}}
 
 % Multiple pointers coming out of a single callout
-% usage: \path[multiple absolute pointers={[fill=agu2, above of=X]{A.north, B.north}{text}}];
+% usage: \path[multiple absolute pointers={[fill=themeaccent, above of=X]{A.north, B.north}{text}}];
 \makeatletter
 \tikzset{
   expand me/.style={#1},
@@ -551,30 +577,30 @@
 \usepackage[normalem]{ulem}   % \sout (strikethrough)
 
 % Emphasis
-\newcommand{\BC}[1]{\textcolor{agu2}{\bf #1}}       % Bold Color
+\newcommand{\BC}[1]{\textcolor{themeaccent}{\bf #1}}       % Bold Color
 \newcommand{\BR}[1]{\textcolor{red}{\bf #1}}        % Bold Red
 \newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (bold red)
 \newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
 
 % Arrow symbols
-\newcommand{\YA}{\textcolor{agu2}{\ding{220}}}
+\newcommand{\YA}{\textcolor{themeaccent}{\ding{220}}}
 \newcommand{\WYA}{\textcolor{white}{\ding{220}}}
-\newcommand{\YAA}{\textcolor{agu2}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+\newcommand{\YAA}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
 
 % Paragraph boxes
 \newcommand{\PB}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
 \newcommand{\PF}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
 
 % Figure captions (turquoise rounded chip)
-\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=agu2,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
 
 % Badges
 \newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](ex){\textcolor{white}{\bf Ex}};}} % same green as exampleblock
 \newcommand{\chu}{\tikz[baseline]{\node[fill=red,anchor=base](note){\textcolor{white}{\bf Note}};}}
-\newcommand{\mon}{\tikz[baseline]{\node[fill=agu2,anchor=base](q){\textcolor{white}{\bf Q}};}}
+\newcommand{\mon}{\tikz[baseline]{\node[fill=themeaccent,anchor=base](q){\textcolor{white}{\bf Q}};}}
 \newcommand{\hatten}{\tikz[baseline]{\node[fill=berkeley,anchor=base](adv){\textcolor{white}{\bf Advanced}};}}
 \newcommand{\ari}{\tikz[baseline]{\node[fill=harvard,anchor=base](tpl){\textcolor{white}{\bf Template}};}}
-\newcommand{\nashi}{\tikz[baseline]{\node[fill=kenbridge,anchor=base](notpl){\textcolor{white}{\bf No template}};}}
+\newcommand{\nashi}{\tikz[baseline]{\node[fill=cambridge,anchor=base](notpl){\textcolor{white}{\bf No template}};}}
 \newcommand{\hoshin}{\tikz[baseline]{\node[fill=oxford,anchor=base](policy){\textcolor{white}{\bf Policy}};}}
 \newcommand{\kotae}{\tikz[baseline]{\node[fill=berkeley,anchor=base](a){\textcolor{white}{\bf A}};}}
 \newcommand{\fukushu}{\tikz[baseline]{\node[fill=tufts,anchor=base](review){\textcolor{white}{\bf Review}};}}
@@ -682,15 +708,15 @@
 
 % Footnote marks: sword ornament + lowercase letter
 \makeatletter
-\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{agu2}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
+\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{themeaccent}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
 \makeatother
 \renewcommand{\thefootnote}{\tt\alph{footnote}}
 \setbeamerfont{footnote}{size=\tiny}
 
 % Inline citations as superscript 1), 2)
 \makeatletter
-\def\@cite#1{\textcolor{agu2}{\tt\textsuperscript{\bf{#1})}}}
-\def\@biblabel#1{\tt\textcolor{agu2}{\bf{#1})}}
+\def\@cite#1{\textcolor{themeaccent}{\tt\textsuperscript{\bf{#1})}}}
+\def\@biblabel#1{\tt\textcolor{themeaccent}{\bf{#1})}}
 \makeatother
 
 % Colors and size of the bibliography list

@@ -11,6 +11,9 @@
 \documentclass[aspectratio=169, 10pt, fleqn, hyperref={pdfpagelabels=false, bookmarks=false, hyperfootnotes=false}]{beamer}
 
 \usepackage{slidestyle}
+% テーマカラー (既定は oxford)。他: agu / cambridge / mit / princeton
+% 例: 青山学院テーマに切り替えるには次行を有効化
+% \slidetheme{agu}
 
 %%------------------------------------------------------------------
 %% 発表情報 (発表ごとにここを書き換える)
@@ -141,19 +144,20 @@
   \begin{tikzpicture}[remember picture, overlay]
     \only<7->{
     \path[color=white, multiple absolute pointers={
-           [fill=agu2, above left=1.3em and 0.2em of g4]
-           {[fill=agu2]g4.north west, [fill=agu2]g5.north west, [fill=agu2]g6.north west}{\footnotesize リーフゴール}
+           [fill=themeaccent, above left=1.3em and 0.2em of g4]
+           {[fill=themeaccent]g4.north west, [fill=themeaccent]g5.north west, [fill=themeaccent]g6.north west}{\footnotesize リーフゴール}
      }];
    }
    \only<2->{
-   \node[rectangle callout, color=white, fill=agu2, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize ルートゴール};
+   \node[rectangle callout, color=white, fill=themeaccent, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize ルートゴール};
    }
   \end{tikzpicture}
 \end{frame}
 
-\section{復習}
+\section{数式環境}
 
 %% 定義スライドの例: 用語の導入 / 定義ブロック / 構成要素 / ポイント
+%% (このセクションは数式環境の使用例を示す)
 \begin{frame}[label=dmproblem]
   \frametitle{意思決定問題}
   \begin{itemize}

@@ -11,6 +11,9 @@
 \documentclass[aspectratio=169, 10pt, fleqn, hyperref={pdfpagelabels=false, bookmarks=false, hyperfootnotes=false}]{beamer}
 
 \usepackage{slidestyle}
+% Theme colors (default: oxford). Others: agu / cambridge / mit / princeton
+% e.g. Uncomment to switch to Aoyama Gakuin University theme
+% \slidetheme{agu}
 
 %%------------------------------------------------------------------
 %% Presentation info (edit here for each talk)
@@ -138,19 +141,20 @@
   \begin{tikzpicture}[remember picture, overlay]
     \only<7->{
     \path[color=white, multiple absolute pointers={
-           [fill=agu2, above left=1.3em and 0.2em of g4]
-           {[fill=agu2]g4.north west, [fill=agu2]g5.north west, [fill=agu2]g6.north west}{\footnotesize leaf goals}
+           [fill=themeaccent, above left=1.3em and 0.2em of g4]
+           {[fill=themeaccent]g4.north west, [fill=themeaccent]g5.north west, [fill=themeaccent]g6.north west}{\footnotesize leaf goals}
      }];
    }
    \only<2->{
-   \node[rectangle callout, color=white, fill=agu2, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize root goal};
+   \node[rectangle callout, color=white, fill=themeaccent, callout absolute pointer={(g1.east)}, right=1ex and 2em of g1]{\footnotesize root goal};
    }
   \end{tikzpicture}
 \end{frame}
 
-\section{Review}
+\section{Math Environments}
 
 %% Definition slide: term intro / definition block / element list / point
+%% (this section demonstrates the math environments)
 \begin{frame}[label=dmproblem]
   \frametitle{Decision Making Problem}
   \begin{itemize}

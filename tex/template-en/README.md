@@ -41,7 +41,13 @@ latexmk -c     # remove intermediate files
 - **Header icon and logo**: `\aauEmailIcon` / `\aauLogo`
 - **Fonts**: `slidestyle.sty` §1 (Rounded-X Mgen+, falling back to Hiragino
   Maru Gothic ProN automatically)
-- **Colors**: `slidestyle.sty` §2 (base color `agu`, accent `agu2`)
+- **Colors**: `slidestyle.sty` §2 (base color `themeprimary`, accent
+  `themeaccent`). Switch themes with `\slidetheme{...}` in the preamble.
+  Default is `oxford` (Oxford Blue + Cerulean Blue); also available are
+  `agu` (Aoyama Gakuin: dark green + blue-green), `cambridge` (Cambridge:
+  Dark Teal + Cambridge Blue), `mit` (MIT Red + Silver Gray), and
+  `princeton` (Black + Princeton Orange). Add a theme by defining just two
+  colors: `<name>Primary` / `<name>Accent`
 
 ## License
 

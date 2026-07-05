@@ -39,7 +39,13 @@ latexmk -c     # 中間ファイルの削除
   自分のアドレス(`@` を含む)に置換すると mailto リンクが有効になる
 - **ヘッダのアイコン・ロゴ**: `\aauEmailIcon` / `\aauLogo`
 - **フォント**: `slidestyle.sty` §1(Rounded-X Mgen+ → ヒラギノ丸ゴに自動フォールバック)
-- **配色**: `slidestyle.sty` §2(基調色 `agu`、アクセント `agu2`)
+- **配色**: `slidestyle.sty` §2(基調色 `themeprimary`、アクセント `themeaccent`)。
+  プリアンブルの `\slidetheme{...}` でテーマごと切り替え可能。
+  既定は `oxford`(Oxford Blue + Cerulean Blue)。ほかに `agu`(青山学院:
+  濃緑 + 青緑)、`cambridge`(Cambridge: Dark Teal + Cambridge Blue)、
+  `mit`(MIT Red + Silver Gray)、`princeton`(Black + Princeton Orange)を
+  用意。新テーマは `<名前>Primary` / `<名前>Accent` の 2 色を
+  `\definecolor` するだけで追加できる
 
 ## ライセンス
 

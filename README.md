@@ -6,12 +6,13 @@
 ![Beamer](https://img.shields.io/badge/Beamer-16%3A9-2f855a)
 ![Templates](https://img.shields.io/badge/templates-English%20%2B%20Japanese-555555)
 
-XeLaTeX + Beamer presentation slide templates (16:9) with a dark-green theme,
-a header band, and a circular progress indicator in the top-right corner.
+XeLaTeX + Beamer presentation slide templates (16:9) with switchable color
+themes (Oxford Blue by default), a header band, and a circular progress
+indicator in the top-right corner.
 
 <p align="center">
-  <img src=".github/release-assets/v1.0.0/title-ja.png" width="49%" alt="Title page of the Japanese template: a rounded dark-green title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
-  <img src=".github/release-assets/v1.0.0/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a blue definition block, an itemized element list, and a red Point block">
+  <img src=".github/readme-assets/title-ja.png" width="49%" alt="Title page of the Japanese template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
+  <img src=".github/readme-assets/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a blue definition block, an itemized element list, and a red Point block">
 </p>
 
 | Directory | Description |
@@ -35,6 +36,28 @@ Prebuilt PDFs (`slide-ja.pdf` / `slide-en.pdf`) are attached to each
 [release](https://github.com/mukoubuchi/slide-template/releases), so you can
 preview both templates without a TeX installation.
 
+## Theme colors
+
+The color scheme (base + accent) is selected with `\slidetheme{...}` in the
+preamble of `slide.tex`:
+
+```latex
+\usepackage{slidestyle}
+\slidetheme{agu} % omit for the default (oxford)
+```
+
+| Theme | Base | Accent |
+| --- | --- | --- |
+| `oxford` (default) | Oxford Blue `#002147` | Cerulean Blue `#49B6FF` |
+| `agu` | Aoyama Gakuin dark green `#025F3D` | blue-green `#00A384` |
+| `cambridge` | Dark Teal `#133844` | Cambridge Blue `#8EE8D8` |
+| `mit` | MIT Red `#A31F34` | Silver Gray `#8A8B8C` |
+| `princeton` | Black `#000000` | Princeton Orange `#E77500` |
+
+All values come from each university's official palette (or, for Aoyama
+Gakuin, from its official logo assets). To add a theme, define two colors
+`<name>Primary` / `<name>Accent` in §2 of `slidestyle.sty`.
+
 ## Continuous integration
 
 GitHub Actions ([`build.yml`](.github/workflows/build.yml)) builds both
@@ -51,6 +74,8 @@ when a `v*` tag is pushed.
 
 ## Features
 
+- Five switchable color themes (see [Theme colors](#theme-colors) above);
+  adding your own takes two `\definecolor` lines
 - Title page with a rounded title box, affiliation logo, and an optional
   "# event name" ribbon
 - Header with author, e-mail, and title; the e-mail becomes a mailto link

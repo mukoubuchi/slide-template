@@ -15,7 +15,7 @@
 %%  10. その他 (URL 折り返し・ナビゲーション制御)
 %%==================================================================
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{slidestyle}[2026/07/05 v2.2 common slide style]
+\ProvidesPackage{slidestyle}[2026/07/06 v2.3 common slide style]
 
 %%------------------------------------------------------------------
 %% 1. フォント
@@ -60,13 +60,36 @@
 %%------------------------------------------------------------------
 %% 2. 配色
 %%------------------------------------------------------------------
-\definecolor{agu}{RGB}{5,44,3}        % 基調色 (深緑)
-\definecolor{agu2}{RGB}{64,224,208}   % アクセント (ターコイズ)
+%% -- テーマカラー (基調色 themeprimary / アクセント themeaccent) --
+%% プリアンブルで \slidetheme{<名前>} を呼ぶと切り替わる (既定: oxford)
+%%   \slidetheme{oxford}    … Oxford Blue + Cerulean Blue (公式パレット)
+%%   \slidetheme{agu}       … 青山学院 濃緑 + 青緑 (公式ロゴ実測色)
+%%   \slidetheme{cambridge} … Cambridge Dark Teal + Cambridge Blue (公式パレット)
+%%   \slidetheme{mit}       … MIT Red + Silver Gray (公式ペア)
+%%   \slidetheme{princeton} … Black + Princeton Orange (公式ペア)
+%% 新テーマは <名前>Primary / <名前>Accent の 2 色を \definecolor するだけ
+\definecolor{oxfordPrimary}{RGB}{0,33,71}       % Oxford Blue (Pantone 282)
+\definecolor{oxfordAccent}{RGB}{73,182,255}     % Oxford Cerulean Blue (公式セカンダリ)
+\definecolor{aguPrimary}{RGB}{2,95,61}          % 青山学院 濃緑 (学院公式ロゴ #025F3D)
+\definecolor{aguAccent}{RGB}{0,163,132}         % 青山学院 青緑 (大学公式ロゴ #00A384)
+\definecolor{cambridgePrimary}{RGB}{19,56,68}   % Cambridge Dark Teal (Pantone 547)
+\definecolor{cambridgeAccent}{RGB}{142,232,216} % Cambridge Blue (Pantone 7471)
+\definecolor{mitPrimary}{RGB}{163,31,52}        % MIT Red (PMS 201)
+\definecolor{mitAccent}{RGB}{138,139,140}       % MIT Silver Gray (PMS 424)
+\definecolor{princetonPrimary}{RGB}{0,0,0}      % Princeton Black
+\definecolor{princetonAccent}{RGB}{231,117,0}   % Princeton Orange (PMS 158)
+\newcommand{\slidetheme}[1]{%
+  \colorlet{themeprimary}{#1Primary}%
+  \colorlet{themeaccent}{#1Accent}%
+}
+\slidetheme{oxford}
+
+%% -- 汎用の名前付きカラー ------------------------------------------
 \definecolor{oxford}{RGB}{0,33,71}
 \definecolor{harvard}{RGB}{165,27,47}
 \definecolor{princeton}{RGB}{255,102,0}
 \definecolor{berkeley}{RGB}{245,170,0}
-\definecolor{kenbridge}{RGB}{153,204,204}
+\definecolor{cambridge}{RGB}{153,204,204}
 \definecolor{stanford}{RGB}{196,30,58}
 \definecolor{tufts}{RGB}{102,153,204}
 \definecolor{yale}{RGB}{15,77,146}
@@ -87,16 +110,18 @@
 %%------------------------------------------------------------------
 \RequirePackage{calc} % 長さ演算 (ヘッダ寸法・フレームタイトル幅)
 
-\usecolortheme[named=agu]{structure}
+% structure 色は themeprimary を名前参照 (\usecolortheme[named=...] は読み込み時に
+% 色を確定させるため \slidetheme での切り替えが効かない。setbeamercolor は使用時解決)
+\setbeamercolor*{structure}{fg=themeprimary}
 \setbeamercovered{transparent}
 \setbeamertemplate{blocks}[rounded][shadow=true]
 % frametitle の白文字/基調色地 (旧 beamerthemesplit が与えていた配色)
-\setbeamercolor{frametitle}{fg=white,bg=agu}
+\setbeamercolor{frametitle}{fg=white,bg=themeprimary}
 \setbeamercolor{framesubtitle}{fg=white}
-\setbeamercolor{primary}{fg=white,bg=agu}
-\setbeamercolor{secondary}{fg=white,bg=agu2}
+\setbeamercolor{primary}{fg=white,bg=themeprimary}
+\setbeamercolor{secondary}{fg=white,bg=themeaccent}
 \setbeamercolor{logo}{bg=white}
-\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=agu2,bg=structure.fg}
+\setbeamercolor{AAUsimple}{use={structure,palette sidebar primary},fg=themeaccent,bg=structure.fg}
 
 \setbeamertemplate{navigation symbols}{} % ナビゲーション記号は非表示
 \setbeamertemplate{footline}{}           % フッタなし (ヘッダのみ使用)
@@ -167,7 +192,7 @@
   % イベント名: 文字長に応じて伸縮する濃緑の枠 (白文字, 下端はスライド下端に一致)
   \ifdefempty{\aauEvent}{}{%
     \begin{tikzpicture}[remember picture, overlay]
-      \node[fill=agu, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
+      \node[fill=themeprimary, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
         at (current page.south) {\usebeamerfont{author}\aauEvent};
     \end{tikzpicture}}
 }
@@ -176,7 +201,7 @@
 \setbeamertemplate{headline}{%
   \begin{beamercolorbox}[wd=1.0\paperwidth,ht=2.25ex,dp=1ex,left]{headfoot}%
       \usebeamerfont{section in head/foot}\hspace*{3.5ex}%
-      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{agu2}{\aauEmail}}) \ |\ %
+      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\tt\textcolor{themeaccent}{\aauEmail}}) \ |\ %
               \insertshorttitle%
   \end{beamercolorbox}%
   \aauheaderbackground%
@@ -204,8 +229,8 @@
     \coordinate (logopos) at ([shift={(-\beamer@logoouterradius-\beamer@borderwidth,0.5\beamer@height)}] HLR);
     {\usebeamercolor{AAUsimple}%
       \usebeamercolor{normal text}%
-      \draw[draw=none,fill=agu] (UL) rectangle (HLR);
-      \fill[fill=agu] (logopos) circle (\beamer@logoouterradius);
+      \draw[draw=none,fill=themeprimary] (UL) rectangle (HLR);
+      \fill[fill=themeprimary] (logopos) circle (\beamer@logoouterradius);
       \fill[fill=normal text.bg] (logopos) circle (\beamer@logoinnerradius);
       % ロゴは白円でクリップ (正方形画像でも角がリングにはみ出さない)
       \begin{scope}
@@ -214,9 +239,9 @@
       \end{scope}
       % 進捗アーク (フレーム番号 / 総フレーム数)
       \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
-      \draw[color=agu2,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
+      \draw[color=themeaccent,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
       \fill[fill=white] ([shift={(\progress:\beamer@counterradius)}] logopos) circle (0.5\beamer@borderwidth);
-      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{agu}\insertframenumber}};
+      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{themeprimary}\insertframenumber}};
     }
   \end{tikzpicture}%
 }
@@ -226,7 +251,7 @@
 \setbeamertemplate{enumerate items}[circle]
 \setbeamertemplate{itemize subitem}[ball] % 2 段目は丸玉マーカー
 \setbeamertemplate{sections/subsections in toc}[ball]
-\setbeamercolor{item projected}{fg=white,bg=agu}
+\setbeamercolor{item projected}{fg=white,bg=themeprimary}
 
 % ブロックの配色
 \setbeamercolor{block title}{fg=white,bg=blue}
@@ -237,7 +262,7 @@
 \setbeamercolor{block body example}{use=block title example,bg=block title example.bg!5}
 
 % goto ボタンの配色
-\setbeamercolor{button}{bg=agu2,fg=white}
+\setbeamercolor{button}{bg=themeaccent,fg=white}
 
 % 目次の深さ (0:chapter, 1:section, 2:subsection, 3:subsubsection)
 \setcounter{tocdepth}{3}
@@ -373,7 +398,7 @@
 }
 
 % 本文中の語をノード化して矢印で結ぶ (\SET で印を付け \CON で接続)
-\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=agu2](#1){#2};}
+\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=themeaccent](#1){#2};}
 \newcommand{\SETR}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
 \newcommand{\SETG}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
 \newcommand{\SETB}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
@@ -386,7 +411,7 @@
     \draw(#1)circle(#4);\end{scope}}
 
 % 1 つの吹き出しから複数のポインタを出す
-% 使用例: \path[multiple absolute pointers={[fill=agu2, above of=X]{A.north, B.north}{text}}];
+% 使用例: \path[multiple absolute pointers={[fill=themeaccent, above of=X]{A.north, B.north}{text}}];
 \makeatletter
 \tikzset{
   expand me/.style={#1},
@@ -543,30 +568,30 @@
 \usepackage[normalem]{ulem}   % \sout (打ち消し線)
 
 % 強調
-\newcommand{\BC}[1]{\textcolor{agu2}{\bf #1}}       % Bold Color
+\newcommand{\BC}[1]{\textcolor{themeaccent}{\bf #1}}       % Bold Color
 \newcommand{\BR}[1]{\textcolor{red}{\bf #1}}        % Bold Red
 \newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (赤太字)
 \newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % 赤の打ち消し線
 
 % 矢印記号
-\newcommand{\YA}{\textcolor{agu2}{\ding{220}}}
+\newcommand{\YA}{\textcolor{themeaccent}{\ding{220}}}
 \newcommand{\WYA}{\textcolor{white}{\ding{220}}}
-\newcommand{\YAA}{\textcolor{agu2}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+\newcommand{\YAA}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
 
 % 段落ボックス
 \newcommand{\PB}[1]{\parbox{\linewidth}{#1}}                    % 行内改行防止
 \newcommand{\PF}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % 脚注用
 
 % 図キャプション (ターコイズの角丸チップ)
-\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=agu2,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
 
 % バッジ
 \newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](例){\textcolor{white}{\bf 例}};}} % exampleblock と同じ緑
 \newcommand{\chu}{\tikz[baseline]{\node[fill=red,anchor=base](注){\textcolor{white}{\bf 注}};}}
-\newcommand{\mon}{\tikz[baseline]{\node[fill=agu2,anchor=base](問){\textcolor{white}{\bf 問}};}}
+\newcommand{\mon}{\tikz[baseline]{\node[fill=themeaccent,anchor=base](問){\textcolor{white}{\bf 問}};}}
 \newcommand{\hatten}{\tikz[baseline]{\node[fill=berkeley,anchor=base](発展){\textcolor{white}{\bf 発展}};}}
 \newcommand{\ari}{\tikz[baseline]{\node[fill=harvard,anchor=base](有){\textcolor{white}{\bf テンプレート有}};}}
-\newcommand{\nashi}{\tikz[baseline]{\node[fill=kenbridge,anchor=base](無){\textcolor{white}{\bf テンプレート無}};}}
+\newcommand{\nashi}{\tikz[baseline]{\node[fill=cambridge,anchor=base](無){\textcolor{white}{\bf テンプレート無}};}}
 \newcommand{\hoshin}{\tikz[baseline]{\node[fill=oxford,anchor=base](方針){\textcolor{white}{\bf 方針}};}}
 \newcommand{\kotae}{\tikz[baseline]{\node[fill=berkeley,anchor=base](答){\textcolor{white}{\bf 答}};}}
 \newcommand{\fukushu}{\tikz[baseline]{\node[fill=tufts,anchor=base](復習){\textcolor{white}{\bf 復習}};}}
@@ -674,15 +699,15 @@
 
 % 脚注マークを剣マーク + 英小文字に
 \makeatletter
-\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{agu2}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
+\renewcommand\@makefnmark{\hbox{\@textsuperscript{\color{themeaccent}\textxswdown\normalfont\!\@textsubscript{\@thefnmark}}}}
 \makeatother
 \renewcommand{\thefootnote}{\tt\alph{footnote}}
 \setbeamerfont{footnote}{size=\tiny}
 
 % 本文中の引用を上付き 1), 2) 形式に
 \makeatletter
-\def\@cite#1{\textcolor{agu2}{\tt\textsuperscript{\bf{#1})}}}
-\def\@biblabel#1{\tt\textcolor{agu2}{\bf{#1})}}
+\def\@cite#1{\textcolor{themeaccent}{\tt\textsuperscript{\bf{#1})}}}
+\def\@biblabel#1{\tt\textcolor{themeaccent}{\bf{#1})}}
 \makeatother
 
 % 参考文献リストの配色・サイズ
