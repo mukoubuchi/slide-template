@@ -175,7 +175,7 @@
 \newlength{\aau@titleheight}
 \setbeamertemplate{title page}{%
   % if the event ribbon is present, shrink the text area by its height
-  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2.5em}}%
+  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2em}}%
   \begin{minipage}[c][\aau@titleheight][c]{\textwidth}
     \vfill
     \centering
@@ -199,7 +199,7 @@
   \ifdefempty{\aauEvent}{}{%
     \begin{tikzpicture}[remember picture, overlay]
       \node[fill=themeprimary, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
-        at (current page.south) {\usebeamerfont{author}\aauEvent};
+        at (current page.south) {\usebeamerfont{author}\footnotesize\aauEvent};
     \end{tikzpicture}}
 }
 

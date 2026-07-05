@@ -170,7 +170,7 @@
 \newlength{\aau@titleheight}
 \setbeamertemplate{title page}{%
   % イベント枠がある場合はその高さの分だけ本文領域を上に詰める
-  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2.5em}}%
+  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2em}}%
   \begin{minipage}[c][\aau@titleheight][c]{\textwidth}
     \vfill
     \centering
@@ -193,7 +193,7 @@
   \ifdefempty{\aauEvent}{}{%
     \begin{tikzpicture}[remember picture, overlay]
       \node[fill=themeprimary, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
-        at (current page.south) {\usebeamerfont{author}\aauEvent};
+        at (current page.south) {\usebeamerfont{author}\footnotesize\aauEvent};
     \end{tikzpicture}}
 }
 
