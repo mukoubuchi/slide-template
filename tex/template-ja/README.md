@@ -40,3 +40,7 @@ latexmk -c     # 中間ファイルの削除
 - **ヘッダのアイコン・ロゴ**: `\aauEmailIcon` / `\aauLogo`
 - **フォント**: `slidestyle.sty` §1(Rounded-X Mgen+ → ヒラギノ丸ゴに自動フォールバック)
 - **配色**: `slidestyle.sty` §2(基調色 `agu`、アクセント `agu2`)
+
+## ライセンス
+
+このテンプレートは `GPL-3.0-or-later` です。詳細は [`../../LICENSE`](../../LICENSE) を参照してください。

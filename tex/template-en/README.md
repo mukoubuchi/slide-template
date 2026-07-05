@@ -42,3 +42,7 @@ latexmk -c     # remove intermediate files
 - **Fonts**: `slidestyle.sty` §1 (Rounded-X Mgen+, falling back to Hiragino
   Maru Gothic ProN automatically)
 - **Colors**: `slidestyle.sty` §2 (base color `agu`, accent `agu2`)
+
+## License
+
+This template is licensed under `GPL-3.0-or-later`; see [`../../LICENSE`](../../LICENSE).

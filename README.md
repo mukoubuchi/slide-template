@@ -1,5 +1,10 @@
 # slide-template
 
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+![XeLaTeX](https://img.shields.io/badge/XeLaTeX-required-008080)
+![Beamer](https://img.shields.io/badge/Beamer-16%3A9-2f855a)
+![Templates](https://img.shields.io/badge/templates-English%20%2B%20Japanese-555555)
+
 XeLaTeX + Beamer presentation slide templates (16:9) with a dark-green theme,
 a header band, and a circular progress indicator in the top-right corner.
 
@@ -46,3 +51,8 @@ README for details.
 The title page, header, and progress circle are merged and simplified from
 the [AAU Simple Beamer Theme](https://github.com/jkjaer/aauLatexTemplates)
 v1.3.2 (© 2014 Jesper Kjær Nielsen, GPL v3+) in §3 of `slidestyle.sty`.
+
+## License
+
+This project is licensed under the
+[GNU General Public License v3.0 or later](LICENSE) (`GPL-3.0-or-later`).
