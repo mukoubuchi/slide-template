@@ -10,16 +10,12 @@ XeLaTeX + Beamer presentation slide templates (16:9) with switchable color
 themes (Oxford Blue by default), a header band, and a circular progress
 indicator with a bold frame number in the top-right corner.
 
-<table>
-  <tr>
-    <td width="50%" align="center"><img src=".github/readme-assets/title-ja.png" width="100%" alt="Title page of the Japanese template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom"></td>
-    <td width="50%" align="center"><img src=".github/readme-assets/title-en.png" width="100%" alt="Title page of the English template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom"></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src=".github/readme-assets/toc-en.png" width="100%" alt="A contents slide from the English template with bold section-number markers and a bold progress number"></td>
-    <td width="50%" align="center"><img src=".github/readme-assets/sample-slide-en.png" width="100%" alt="A sample definition slide from the English template with a bold progress number, a blue definition block, an itemized element list, and a red Point block"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src=".github/readme-assets/title-ja.png" width="49%" alt="Title page of the Japanese template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
+  <img src=".github/readme-assets/title-en.png" width="49%" alt="Title page of the English template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
+  <img src=".github/readme-assets/toc-en.png" width="49%" alt="A contents slide from the English template with bold section-number markers and a bold progress number">
+  <img src=".github/readme-assets/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a bold progress number, a blue definition block, an itemized element list, and a red Point block">
+</p>
 
 | Directory | Description |
 | --- | --- |
