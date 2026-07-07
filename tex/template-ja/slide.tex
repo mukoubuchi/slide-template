@@ -62,21 +62,21 @@
   \frametitle{ブロック環境}
   \begin{columns}[t]
     \begin{column}{0.48\textwidth}
-      \begin{block}{定理 (block)}
+      \begin{block}{定理}
         標準のブロック
       \end{block}
-      \begin{alertblock}{注意 (alertblock)}
+      \begin{alertblock}{注意}
         強調のブロック
       \end{alertblock}
-      \begin{exampleblock}{例 (exampleblock)}
+      \begin{exampleblock}{例}
         例示のブロック
       \end{exampleblock}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{exercise}{小演習 (exercise)}
+      \begin{exercise}{小演習}
         演習用のブロック
       \end{exercise}
-      \begin{assignment}{課題 (assignment)}
+      \begin{assignment}{課題}
         課題用のブロック
       \end{assignment}
     \end{column}
@@ -163,15 +163,15 @@
   \begin{itemize}
     \item \boldcolor{意思決定問題}は 3 つ組として定義される
   \end{itemize}
-  \begin{block}{意思決定問題 (Decision Making Problem)}
+  \begin{block}{意思決定問題}
     $D \coloneqq (A, \varTheta, c)$
   \end{block}
   \begin{itemize}
     \item[]
     \begin{itemize}
-      \item $A$: \boldcolor{選択肢} (Alternative)。選び得る選択の集合
-      \item $\varTheta$: \boldcolor{自然の状態} (State of Nature)。将来起こり得る事象の集合
-      \item $c$: \boldcolor{結果} (consequence)。次で定義される関数:
+      \item $A$: \boldcolor{選択肢}。選び得る選択の集合
+      \item $\varTheta$: \boldcolor{自然の状態}。将来起こり得る事象の集合
+      \item $c$: \boldcolor{結果}。次で定義される関数:
         $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
     \end{itemize}
   \end{itemize}
@@ -184,9 +184,9 @@
 \begin{frame}[label=dmprocedure]
   \frametitle{意思決定の手順}
   \begin{enumerate}
-    \item \boldcolor{目標設定} (Goal Setting): 選択肢間の選好を評価できるよう
+    \item \boldcolor{目標設定}: 選択肢間の選好を評価できるよう
       意思決定の目標を明確にする
-    \item \boldcolor{基準選択} (Criteria Selection): 最良の選択肢を選べるよう
+    \item \boldcolor{基準選択}: 最良の選択肢を選べるよう
       最良の基準を選択する
   \end{enumerate}
   \begin{alertblock}{Point}
@@ -206,7 +206,9 @@
 
 %% 締め
 \begin{frame}
-  \vspace{2.5\baselineskip} % ヘッダ帯の高さ分だけ上余白を加算して視覚的中央に
+  % ヘッダ帯は本文領域に重なって描画されるため、その高さを確保し、
+  % 残りの白地で中央に見えるようにする (+20pt は Zapfino の見え方調整)
+  \vspace*{\dimexpr\aauheaderheight+20pt\relax}
   \vfill
   \begin{center}
   \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % 筆記体 (macOS 標準)

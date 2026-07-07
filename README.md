@@ -61,8 +61,14 @@ Gakuin, from its official logo assets). To add a theme, define two colors
 ## Continuous integration
 
 GitHub Actions ([`build.yml`](.github/workflows/build.yml)) builds both
-templates on every pull request, and attaches the built PDFs to the release
-when a `v*` tag is pushed.
+templates on every pull request, checks Japanese/English structural parity,
+validates PDF page count and page size, and renders every page to PNG for
+smoke testing. The workflow uploads the built PDFs, LaTeX logs, and rendered
+pages as artifacts.
+
+When a `v*` tag is pushed, the workflow syncs release notes from
+`.github/release-notes/<tag>.md` if present and attaches the built PDFs to the
+release.
 
 ## Requirements
 

@@ -1,10 +1,13 @@
-# Build both templates with XeLaTeX.
+# Build and smoke-check both templates with XeLaTeX.
 #
 # - pull_request / workflow_dispatch: build check only
-# - tag push (v*): build and attach slide-ja.pdf / slide-en.pdf to the release
+# - tag push (v*): build, sync matching release notes from
+#   .github/release-notes/<tag>.md, and attach slide-ja.pdf / slide-en.pdf
 #
 # Runs on macOS because the font fallback chain in slidestyle.sty relies on
 # fonts bundled with macOS (Hiragino Maru Gothic ProN, Menlo).
+# The workflow intentionally checks structural/render parity, not pixel-perfect
+# visual equivalence: localized text changes should not fail CI by themselves.
 name: build
 
 on:
@@ -14,7 +17,7 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -22,10 +25,51 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install TeX Live (MacTeX, no GUI)
+      - name: Install TeX Live and PDF tools
         run: |
           brew install --cask mactex-no-gui
+          brew install poppler
           echo "/Library/TeX/texbin" >> "$GITHUB_PATH"
+
+      - name: Check template structure parity
+        run: |
+          set -euo pipefail
+
+          check_count() {
+            local pattern="$1"
+            local label="$2"
+            local ja_count
+            local en_count
+            ja_count=$(grep -F -c "$pattern" tex/template-ja/slide.tex || true)
+            en_count=$(grep -F -c "$pattern" tex/template-en/slide.tex || true)
+            if [ "$ja_count" != "$en_count" ]; then
+              echo "::error title=Template structure mismatch::$label count differs: ja=$ja_count en=$en_count"
+              exit 1
+            fi
+          }
+
+          check_count '\section{' 'section'
+          check_count '\begin{frame}' 'frame'
+          check_count '\begin{columns}' 'columns'
+          check_count '\begin{column}' 'column'
+          check_count '\begin{block}' 'block'
+          check_count '\begin{alertblock}' 'alertblock'
+          check_count '\begin{exampleblock}' 'exampleblock'
+          check_count '\begin{exercise}' 'exercise'
+          check_count '\begin{assignment}' 'assignment'
+          check_count '\onslide<' 'onslide'
+          check_count '\only<' 'only'
+          check_count '\alt<' 'alt'
+          check_count '\vspace*{\dimexpr\aauheaderheight+20pt\relax}' 'closing-slide top spacing'
+
+          ja_labels=$(grep -o 'label=[^],]*' tex/template-ja/slide.tex | sed 's/^label=//')
+          en_labels=$(grep -o 'label=[^],]*' tex/template-en/slide.tex | sed 's/^label=//')
+          if [ "$ja_labels" != "$en_labels" ]; then
+            echo "::error title=Template label mismatch::frame labels differ between Japanese and English templates"
+            printf 'Japanese labels:\n%s\n' "$ja_labels"
+            printf 'English labels:\n%s\n' "$en_labels"
+            exit 1
+          fi
 
       - name: Build Japanese template
         working-directory: tex/template-ja
@@ -35,15 +79,112 @@ jobs:
         working-directory: tex/template-en
         run: latexmk
 
+      - name: Validate PDF outputs
+        run: |
+          set -euo pipefail
+
+          ja_pdf=tex/template-ja/slide.pdf
+          en_pdf=tex/template-en/slide.pdf
+
+          for pdf in "$ja_pdf" "$en_pdf"; do
+            test -s "$pdf"
+          done
+
+          pdf_pages() {
+            pdfinfo "$1" | awk '/^Pages:/ {print $2}'
+          }
+
+          pdf_size() {
+            pdfinfo "$1" | sed -n 's/^Page size:[[:space:]]*//p'
+          }
+
+          ja_pages=$(pdf_pages "$ja_pdf")
+          en_pages=$(pdf_pages "$en_pdf")
+          if [ "$ja_pages" != "$en_pages" ]; then
+            echo "::error title=PDF page count mismatch::ja=$ja_pages en=$en_pages"
+            exit 1
+          fi
+
+          ja_size=$(pdf_size "$ja_pdf")
+          en_size=$(pdf_size "$en_pdf")
+          if [ "$ja_size" != "$en_size" ]; then
+            echo "::error title=PDF page size mismatch::ja=$ja_size en=$en_size"
+            exit 1
+          fi
+
+          mkdir -p build/render/ja build/render/en
+          pdftoppm -png -r 72 "$ja_pdf" build/render/ja/page
+          pdftoppm -png -r 72 "$en_pdf" build/render/en/page
+
+          ja_rendered=$(find build/render/ja -name 'page-*.png' | wc -l | tr -d ' ')
+          en_rendered=$(find build/render/en -name 'page-*.png' | wc -l | tr -d ' ')
+          if [ "$ja_rendered" != "$ja_pages" ] || [ "$en_rendered" != "$en_pages" ]; then
+            echo "::error title=PDF render mismatch::ja_rendered=$ja_rendered/$ja_pages en_rendered=$en_rendered/$en_pages"
+            exit 1
+          fi
+
+          echo "Validated $ja_pages pages at $ja_size for both templates."
+
+      - name: Prepare build artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p build/artifacts/rendered-pages
+          cp tex/template-ja/slide.pdf build/artifacts/slide-ja.pdf
+          cp tex/template-en/slide.pdf build/artifacts/slide-en.pdf
+          cp tex/template-ja/slide.log build/artifacts/slide-ja.log
+          cp tex/template-en/slide.log build/artifacts/slide-en.log
+          cp -R build/render/ja build/artifacts/rendered-pages/ja
+          cp -R build/render/en build/artifacts/rendered-pages/en
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: slide-template-build
+          path: build/artifacts/
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: slide-template-build
+          path: build/artifacts
+
       - name: Attach PDFs to the release
-        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          cp tex/template-ja/slide.pdf slide-ja.pdf
-          cp tex/template-en/slide.pdf slide-en.pdf
-          # create a draft release first if the tag was pushed before the release
-          gh release view "$TAG" >/dev/null 2>&1 || \
-            gh release create "$TAG" --draft --title "$TAG" --notes "Draft — replace with release notes"
-          gh release upload "$TAG" slide-ja.pdf slide-en.pdf --clobber
+          set -euo pipefail
+
+          notes_file=".github/release-notes/${TAG}.md"
+          release_title="$TAG"
+          notes_args=(--notes "Draft — replace with release notes")
+
+          if [ -f "$notes_file" ]; then
+            parsed_title=$(sed -n 's/^<!-- title: \(.*\) -->$/\1/p' "$notes_file" | head -n 1)
+            if [ -n "$parsed_title" ]; then
+              release_title="$parsed_title"
+            fi
+
+            release_notes=$(mktemp)
+            sed '/^<!-- title: .* -->$/d' "$notes_file" > "$release_notes"
+            notes_args=(--notes-file "$release_notes")
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            if [ -f "$notes_file" ]; then
+              gh release edit "$TAG" --title "$release_title" "${notes_args[@]}"
+            fi
+          else
+            gh release create "$TAG" --verify-tag --draft --title "$release_title" "${notes_args[@]}"
+          fi
+
+          gh release upload "$TAG" build/artifacts/slide-ja.pdf build/artifacts/slide-en.pdf --clobber
