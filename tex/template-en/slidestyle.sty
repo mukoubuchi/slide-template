@@ -131,20 +131,20 @@
 \setbeamertemplate{bibliography item}[text] % numbered bibliography marks
 
 % Customization hooks (override with \renewcommand in the document)
-\providecommand{\aauEmail}{Email Address}         % e-mail address in header
-\providecommand{\aauEmailIcon}{Figs/email}        % e-mail icon image
-\providecommand{\aauLogo}{Figs/agu}               % logo inside the top-right circle
-\providecommand{\aauEvent}{}                      % "# Event Name" at the bottom of the title page (hidden if empty)
+\providecommand{\aauemail}{Email Address}         % e-mail address in header
+\providecommand{\aauemailicon}{Figs/email}        % e-mail icon image
+\providecommand{\aaulogo}{Figs/agu}               % logo inside the top-right circle
+\providecommand{\aauevent}{}                      % "# Event Name" at the bottom of the title page (hidden if empty)
 
-% Header e-mail: only becomes a mailto link when \aauEmail is a real address
+% Header e-mail: only becomes a mailto link when \aauemail is a real address
 % (contains @); placeholder text like "Email Address" stays a plain string
-\newcommand{\aauEmailMailto}[1]{\href{mailto:\aauEmail}{#1}}
+\newcommand{\aauemailmailto}[1]{\href{mailto:\aauemail}{#1}}
 \ExplSyntaxOn
-\NewDocumentCommand { \aauEmailHref } { m }
+\NewDocumentCommand { \aauemailhref } { m }
   {
-    \str_set:Nx \l_tmpa_str { \aauEmail }
+    \str_set:Nx \l_tmpa_str { \aauemail }
     \str_if_in:NnTF \l_tmpa_str { @ }
-      { \aauEmailMailto { #1 } }
+      { \aauemailmailto { #1 } }
       { #1 }
   }
 \ExplSyntaxOff
@@ -157,8 +157,8 @@
 \reset@font
 % Height of the header band (public name referenced from the document;
 % the band is drawn over the text area)
-\newlength{\aauHeaderHeight}
-\setlength{\aauHeaderHeight}{\beamer@height}
+\newlength{\aauheaderheight}
+\setlength{\aauheaderheight}{\beamer@height}
 \newlength{\beamer@logoradius}
 \setlength{\beamer@logoradius}{0.95\beamer@height/2}
 \newlength{\beamer@borderwidth}
@@ -175,12 +175,12 @@
 \newlength{\aau@titleheight}
 \setbeamertemplate{title page}{%
   % if the event ribbon is present, shrink the text area by its height
-  \ifdefempty{\aauEvent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2em}}%
+  \ifdefempty{\aauevent}{\setlength{\aau@titleheight}{\textheight}}{\setlength{\aau@titleheight}{\textheight-2em}}%
   \begin{minipage}[c][\aau@titleheight][c]{\textwidth}
     \vfill
     \centering
     \begin{beamercolorbox}[wd=\textwidth,center,sep=\baselineskip,rounded=true,shadow=true]{frametitle}
-      \fontsize{18pt}{13pt}\selectfont{\bf\inserttitle}\\
+      \fontsize{18pt}{13pt}\selectfont{\textbf{\inserttitle}}\\
       {\insertsubtitle}
     \end{beamercolorbox}\vspace*{\baselineskip}
     \begin{center}
@@ -196,10 +196,10 @@
   \end{minipage}%
   % event name: dark-green box that stretches with the text (white text,
   % bottom edge flush with the bottom of the slide)
-  \ifdefempty{\aauEvent}{}{%
+  \ifdefempty{\aauevent}{}{%
     \begin{tikzpicture}[remember picture, overlay]
       \node[fill=themeprimary, text=white, anchor=south, inner xsep=0.5em, inner ysep=0.3ex]
-        at (current page.south) {\usebeamerfont{author}\footnotesize\aauEvent};
+        at (current page.south) {\usebeamerfont{author}\footnotesize\aauevent};
     \end{tikzpicture}}
 }
 
@@ -207,7 +207,7 @@
 \setbeamertemplate{headline}{%
   \begin{beamercolorbox}[wd=1.0\paperwidth,ht=2.25ex,dp=1ex,left]{headfoot}%
       \usebeamerfont{section in head/foot}\hspace*{3.5ex}%
-      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauEmailIcon}}~\aauEmailHref{\textcolor{themeaccent}{\texttt{\aauEmail}}}) \ |\ %
+      \insertshortauthor\ (\raisebox{-0.4ex}{\includegraphics[height=2ex]{\aauemailicon}}~\aauemailhref{\textcolor{themeaccent}{\texttt{\aauemail}}}) \ |\ %
               \insertshorttitle%
   \end{beamercolorbox}%
   \aauheaderbackground%
@@ -243,7 +243,7 @@
       % sticking out of the ring)
       \begin{scope}
         \clip (logopos) circle (\beamer@logoinnerradius);
-        \node at (logopos) {\includegraphics[width=2\beamer@logoradius]{\aauLogo}};
+        \node at (logopos) {\includegraphics[width=2\beamer@logoradius]{\aaulogo}};
       \end{scope}
       % progress arc (frame number / total frames)
       \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
@@ -406,13 +406,13 @@
 }
 
 % Turn words in the text into nodes and connect them with arrows
-% (mark with \SET, connect with \CON)
-\newcommand{\SET}[2]{\tikz[baseline=(#1.base)]\node[na,fill=themeaccent](#1){#2};}
-\newcommand{\SETR}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
-\newcommand{\SETG}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
-\newcommand{\SETB}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
-\newcommand{\SETY}[2]{\tikz[baseline=(#1.base)]\node[na,fill=yellow!20](#1){#2};}
-\newcommand{\CON}[5][thick]{\begin{tikzpicture}[overlay]\path[->,#1](#2) edge [out=#4, in=#5] (#3);\end{tikzpicture}}
+% (mark with \marknode, connect with \connectnodes)
+\newcommand{\marknode}[2]{\tikz[baseline=(#1.base)]\node[na,fill=themeaccent](#1){#2};}
+\newcommand{\marknodered}[2]{\tikz[baseline=(#1.base)]\node[na,fill=red!20](#1){#2};}
+\newcommand{\marknodegreen}[2]{\tikz[baseline=(#1.base)]\node[na,fill=green!20](#1){#2};}
+\newcommand{\marknodeblue}[2]{\tikz[baseline=(#1.base)]\node[na,fill=blue!20](#1){#2};}
+\newcommand{\marknodeyellow}[2]{\tikz[baseline=(#1.base)]\node[na,fill=yellow!20](#1){#2};}
+\newcommand{\connectnodes}[5][thick]{\begin{tikzpicture}[overlay]\path[->,#1](#2) edge [out=#4, in=#5] (#3);\end{tikzpicture}}
 
 % Arc of the angle enclosed by three points
 \newcommand\myarc[4]{\begin{scope}[very thick]
@@ -544,12 +544,12 @@
 \everymath{\displaystyle}
 
 \providecommand{\abs}[1]{\lvert#1\rvert}
-\newcommand{\MIT}[1]{\mbox{\it{#1}}} % Math ITalic
-\newcommand\DEFQE{\rotatebox{180}{$\coloneqq$}}
-\newcommand\DEFEQ{\coloneqq}
-\newcommand\DEFLRA{\vcentcolon\hspace{-0.5pt}\Leftrightarrow}
-\newcommand\DEFSSE{\vcentcolon\hspace{-0.5pt}\subseteq}
-\newcommand*{\Perm}[2]{{}_{#1}P_{#2}} % permutations
+\newcommand{\mathittext}[1]{\mbox{\it{#1}}} % Math ITalic
+\newcommand\defqe{\rotatebox{180}{$\coloneqq$}}
+\newcommand\defeq{\coloneqq}
+\newcommand\deflra{\vcentcolon\hspace{-0.5pt}\Leftrightarrow}
+\newcommand\defsse{\vcentcolon\hspace{-0.5pt}\subseteq}
+\newcommand*{\perm}[2]{{}_{#1}P_{#2}} % permutations
 
 % Upright math symbols (\mathup{\alpha} etc.)
 \DeclareRobustCommand{\mathup}[1]{\begingroup\changegreek\mathrm{#1}\endgroup}
@@ -577,22 +577,22 @@
 \usepackage[normalem]{ulem}   % \sout (strikethrough)
 
 % Emphasis
-\newcommand{\BC}[1]{\textcolor{themeaccent}{\bf #1}}       % Bold Color
-\newcommand{\BR}[1]{\textcolor{red}{\bf #1}}        % Bold Red
+\newcommand{\bc}[1]{\textcolor{themeaccent}{\textbf{#1}}} % Bold Color
+\newcommand{\br}[1]{\textcolor{red}{\textbf{#1}}}         % Bold Red
 \newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (bold red)
 \newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
 
 % Arrow symbols
-\newcommand{\YA}{\textcolor{themeaccent}{\ding{220}}}
-\newcommand{\WYA}{\textcolor{white}{\ding{220}}}
-\newcommand{\YAA}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+\newcommand{\ya}{\textcolor{themeaccent}{\ding{220}}}
+\newcommand{\wya}{\textcolor{white}{\ding{220}}}
+\newcommand{\yaa}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
 
 % Paragraph boxes
-\newcommand{\PB}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
-\newcommand{\PF}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
+\newcommand{\pb}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
+\newcommand{\pf}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
 
 % Figure captions (turquoise rounded chip)
-\newcommand{\FC}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+\newcommand{\fc}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
 
 % Badges
 \newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](ex){\textcolor{white}{\bf Ex}};}} % same green as exampleblock
@@ -619,16 +619,16 @@
 \newcommand\tritem{{\footnotesize$\blacktriangleright$}}
 
 % Dashes
-\newcommand\DASH{\textendash}
-\newcommand\DDASH{\textemdash}
+\newcommand\dash{\textendash}
+\newcommand\ddash{\textemdash}
 
 % Tilted exclamation marks
-\newcommand{\EX}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
-\newcommand{\EXW}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
-\newcommand{\EQ}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
+\newcommand{\ex}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\exw}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\exq}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
 
 % Jump button to a labeled frame
-\newcommand{\GO}[2]{\raisebox{-0ex}{\hyperlink{#1}{\beamergotobutton{#2}}}}
+\newcommand{\go}[2]{\raisebox{-0ex}{\hyperlink{#1}{\beamergotobutton{#2}}}}
 
 % Cross-references
 \newcommand{\tabref}[1]{{\bf Table~\ref{#1}}}

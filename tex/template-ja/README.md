@@ -33,11 +33,11 @@ latexmk -c     # 中間ファイルの削除
 - **画角**: `aspectratio=169`(4:3 に戻すときは削除)
 - **表紙**(タイトルボックス / 日付 / 著者 / 所属ロゴ / # イベント名):
   所属ロゴは `\titlegraphic{\includegraphics[height=1.5em]{Figs/...}}`、
-  イベント名は `\renewcommand{\aauEvent}{...}`(空なら枠ごと非表示)
-- **ヘッダのメール**: `\renewcommand{\aauEmail}{...}`。
+  イベント名は `\renewcommand{\aauevent}{...}`(空なら枠ごと非表示)
+- **ヘッダのメール**: `\renewcommand{\aauemail}{...}`。
   プレースホルダ「メールアドレス」のままならリンク無効。
   自分のアドレス(`@` を含む)に置換すると mailto リンクが有効になる
-- **ヘッダのアイコン・ロゴ**: `\aauEmailIcon` / `\aauLogo`
+- **ヘッダのアイコン・ロゴ**: `\aauemailicon` / `\aaulogo`
 - **フォント**: `slidestyle.sty` §1(Rounded-X Mgen+ → ヒラギノ丸ゴに自動フォールバック)
 - **配色**: `slidestyle.sty` §2(基調色 `themeprimary`、アクセント `themeaccent`)。
   プリアンブルの `\slidetheme{...}` でテーマごと切り替え可能。

@@ -19,14 +19,14 @@
 %% Presentation info (edit here for each talk)
 %%------------------------------------------------------------------
 \title{Presentation Title}
-\subtitle{\fontsize{10pt}{0pt}\selectfont {\DDASH}Subtitle{\DDASH}}
+\subtitle{\fontsize{10pt}{0pt}\selectfont {\ddash}Subtitle{\ddash}}
 \author{Your Name}
 \institute{} % Title page shows logo instead of affiliation text (see \titlegraphic below)
 \date{\footnotesize{\today}}
-\renewcommand{\aauEmail}{Email Address} % e-mail address in header; replace with your real address (containing @) to activate the mailto link — the placeholder stays unlinked
-\renewcommand{\aauLogo}{Figs/gugugaga-icon.png}    % logo inside circle (top-right)
+\renewcommand{\aauemail}{Email Address} % e-mail address in header; replace with your real address (containing @) to activate the mailto link — the placeholder stays unlinked
+\renewcommand{\aaulogo}{Figs/gugugaga-icon.png}    % logo inside circle (top-right)
 \titlegraphic{\includegraphics[height=1.5em]{Figs/gugugaga-logo.png}} % affiliation logo
-\renewcommand{\aauEvent}{Event Name}           % shown as "# Event Name" at bottom of title page
+\renewcommand{\aauevent}{Event Name}           % shown as "# Event Name" at bottom of title page
 
 %%==================================================================
 \begin{document}
@@ -44,12 +44,12 @@
 \begin{frame}[label=macros]
   \frametitle{Macros and Citations}
   \begin{itemize}
-    \item Emphasis: \BC{accent bold}, \BR{red bold}, \ub{red bold}, \uk{strikethrough}
-    \item Arrow: sequential {\YA} result
+    \item Emphasis: \bc{accent bold}, \br{red bold}, \ub{red bold}, \uk{strikethrough}
+    \item Arrow: sequential {\ya} result
     \item Badges: \rei~example \chu~caution \mon~question \kotae~answer
     \item Key: \keystroke{Ctrl}+\keystroke{C}
     \item Citations: superscript numbers\cite{nuseibeh2000}\cite{royce1970}\cite{vanlamsweerde2001}
-    \item Jump button: \GO{title}{Go to Title}
+    \item Jump button: \go{title}{Go to Title}
   \end{itemize}
 \end{frame}
 
@@ -85,15 +85,15 @@
 \begin{frame}[label=goalgraph]
   \frametitle{TikZ Example}
   \begin{itemize}
-  \item A goal graph is constructed as follows.
+  \item A goal graph is constructed as follows
   \begin{enumerate}
     \onslide<2->{%
-    \PB{\item Based on customers' needs, the \BC{root goal} $g_1$ is formulated\footnote{A goal represents an achieved state.}}}
+    \pb{\item Based on customers' needs, the \bc{root goal} $g_1$ is formulated\footnote{A goal represents an achieved state.}}}
     \onslide<3->{%
-    \PB{\item Goals are \BC{decomposed} into subgoals\footnote{The angle mark denotes a decomposition group.}.
+    \pb{\item Goals are \bc{decomposed} into subgoals\footnote{The angle mark denotes a decomposition group.}.
         Decomposition is repeated until goals become concrete}}
     \onslide<7->{%
-    \PB{\item Requirements are selected from the well-decomposed \BC{leaf goal}s}}
+    \pb{\item Requirements are selected from the well-decomposed \bc{leaf goal}s}}
   \end{enumerate}
   \end{itemize}
   \centering
@@ -136,7 +136,7 @@
     \pic [draw, angle radius=0.5cm] {angle = g2--g1--g3};
     }
   \end{tikzpicture}\\
-  \onslide<6->{\FC{Goal graph}}
+  \onslide<6->{\fc{Goal graph}}
   % Callout bubbles (overlay — does not affect body layout)
   \begin{tikzpicture}[remember picture, overlay]
     \only<7->{
@@ -158,7 +158,7 @@
 \begin{frame}[label=dmproblem]
   \frametitle{Decision Making Problem}
   \begin{itemize}
-    \item \BC{Decision Making Problem} is defined as a three-tuple
+    \item \bc{Decision Making Problem} is defined as a three-tuple
   \end{itemize}
   \begin{block}{Decision Making Problem}
     $D \coloneqq (A, \varTheta, c)$
@@ -166,9 +166,9 @@
   \begin{itemize}
     \item[]
     \begin{itemize}
-      \item $A$: \BC{Alternative}. A set of possible choices
-      \item $\varTheta$: \BC{State of Nature}. A set of possible events in the future
-      \item $c$: \BC{consequence}. A function defined as follows:
+      \item $A$: \bc{Alternative}. A set of possible choices
+      \item $\varTheta$: \bc{State of Nature}. A set of possible events in the future
+      \item $c$: \bc{consequence}. A function defined as follows:
         $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
     \end{itemize}
   \end{itemize}
@@ -181,9 +181,9 @@
 \begin{frame}[label=dmprocedure]
   \frametitle{Decision Making Procedure}
   \begin{enumerate}
-    \item \BC{Goal Setting}: clarify goals of the decision making in order to
+    \item \bc{Goal Setting}: clarify goals of the decision making in order to
       evaluate preferences among alternatives
-    \item \BC{Criteria Selection}: choose the best criterion so as to select
+    \item \bc{Criteria Selection}: choose the best criterion so as to select
       the best alternative among alternatives
   \end{enumerate}
   \begin{alertblock}{Point}
@@ -205,11 +205,11 @@
 \begin{frame}
   % the header band is drawn over the text area, so reserve its height and
   % center in the remaining white area (+20pt calibrates Zapfino's ink position)
-  \vspace*{\dimexpr\aauHeaderHeight+20pt\relax}
+  \vspace*{\dimexpr\aauheaderheight+20pt\relax}
   \vfill
   \begin{center}
   \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % cursive font (standard on macOS)
-    {\tt Thanks for listening\EX}
+    {\tt Thanks for listening\ex}
   \end{center}
   \vfill
 \end{frame}

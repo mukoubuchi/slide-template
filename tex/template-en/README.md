@@ -34,11 +34,11 @@ latexmk -c     # remove intermediate files
 - **Aspect ratio**: `aspectratio=169` (remove it to go back to 4:3)
 - **Title page** (title box / date / author / affiliation logo / "# event name"):
   set the logo with `\titlegraphic{\includegraphics[height=1.5em]{Figs/...}}`
-  and the event name with `\renewcommand{\aauEvent}{...}` (hidden when empty)
-- **Header e-mail**: `\renewcommand{\aauEmail}{...}`.
+  and the event name with `\renewcommand{\aauevent}{...}` (hidden when empty)
+- **Header e-mail**: `\renewcommand{\aauemail}{...}`.
   The "Email Address" placeholder stays unlinked; replace it with your real
   address (containing `@`) to activate the mailto link
-- **Header icon and logo**: `\aauEmailIcon` / `\aauLogo`
+- **Header icon and logo**: `\aauemailicon` / `\aaulogo`
 - **Fonts**: `slidestyle.sty` §1 (Rounded-X Mgen+, falling back to Hiragino
   Maru Gothic ProN automatically)
 - **Colors**: `slidestyle.sty` §2 (base color `themeprimary`, accent
