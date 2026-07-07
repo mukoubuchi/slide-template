@@ -19,7 +19,7 @@
 %% 発表情報 (発表ごとにここを書き換える)
 %%------------------------------------------------------------------
 \title{発表タイトル}
-\subtitle{\fontsize{10pt}{0pt}\selectfont {\ddash}サブタイトル{\ddash}}
+\subtitle{\fontsize{10pt}{0pt}\selectfont {\emdash}サブタイトル{\emdash}}
 \author{氏名}
 \institute{} % 表紙は所属テキストの代わりにロゴを表示 (下の \titlegraphic)
 \date{\footnotesize{\today}}
@@ -44,9 +44,9 @@
 \begin{frame}[label=macros]
   \frametitle{強調マクロと引用}
   \begin{itemize}
-    \item 強調: \bc{アクセント色の太字}・\br{赤の太字}・\ub{赤太字}・\uk{打ち消し}
-    \item 矢印: 順接 {\ya} こうなる
-    \item バッジ: \rei~例を示す \chu~注意を促す \mon~問いを立てる \kotae~答える
+    \item 強調: \boldcolor{アクセント色の太字}・\boldred{赤の太字}・\underbold{赤太字}・\redstrike{打ち消し}
+    \item 矢印: 順接 {\arrow} こうなる
+    \item バッジ: \examplebadge~例を示す \notebadge~注意を促す \questionbadge~問いを立てる \answerbadge~答える
     \item キー操作: \keystroke{Ctrl}+\keystroke{C}
     \item 引用は上付き番号になる:
       要求工学のロードマップ\cite{nuseibeh2000},
@@ -91,12 +91,12 @@
   \item ゴールグラフは次の手順で構築する
   \begin{enumerate}
     \onslide<2->{%
-    \pb{\item 顧客のニーズから\bc{ルートゴール} $g_1$ を定式化する\footnote{ゴールは「達成された状態」を表す。}}}
+    \nobreakbox{\item 顧客のニーズから\boldcolor{ルートゴール} $g_1$ を定式化する\footnote{ゴールは「達成された状態」を表す。}}}
     \onslide<3->{%
-    \pb{\item ゴールを子ゴールへ\bc{分解}する\footnote{角度マークは分解のまとまりを表す。}。
+    \nobreakbox{\item ゴールを子ゴールへ\boldcolor{分解}する\footnote{角度マークは分解のまとまりを表す。}。
         具体的なゴールになるまで分解を繰り返す}}
     \onslide<7->{%
-    \pb{\item 十分に分解された\bc{リーフゴール}の中から要求を選択する}}
+    \nobreakbox{\item 十分に分解された\boldcolor{リーフゴール}の中から要求を選択する}}
   \end{enumerate}
   \end{itemize}
   \centering
@@ -139,7 +139,7 @@
     \pic [draw, angle radius=0.5cm] {angle = g2--g1--g3};
     }
   \end{tikzpicture}\\
-  \onslide<6->{\fc{ゴールグラフ}}
+  \onslide<6->{\captionchip{ゴールグラフ}}
   % 吹き出し (overlay なので本体のレイアウトに影響しない)
   \begin{tikzpicture}[remember picture, overlay]
     \only<7->{
@@ -161,7 +161,7 @@
 \begin{frame}[label=dmproblem]
   \frametitle{意思決定問題}
   \begin{itemize}
-    \item \bc{意思決定問題}は 3 つ組として定義される
+    \item \boldcolor{意思決定問題}は 3 つ組として定義される
   \end{itemize}
   \begin{block}{意思決定問題 (Decision Making Problem)}
     $D \coloneqq (A, \varTheta, c)$
@@ -169,9 +169,9 @@
   \begin{itemize}
     \item[]
     \begin{itemize}
-      \item $A$: \bc{選択肢} (Alternative)。選び得る選択の集合
-      \item $\varTheta$: \bc{自然の状態} (State of Nature)。将来起こり得る事象の集合
-      \item $c$: \bc{結果} (consequence)。次で定義される関数:
+      \item $A$: \boldcolor{選択肢} (Alternative)。選び得る選択の集合
+      \item $\varTheta$: \boldcolor{自然の状態} (State of Nature)。将来起こり得る事象の集合
+      \item $c$: \boldcolor{結果} (consequence)。次で定義される関数:
         $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
     \end{itemize}
   \end{itemize}
@@ -184,9 +184,9 @@
 \begin{frame}[label=dmprocedure]
   \frametitle{意思決定の手順}
   \begin{enumerate}
-    \item \bc{目標設定} (Goal Setting): 選択肢間の選好を評価できるよう
+    \item \boldcolor{目標設定} (Goal Setting): 選択肢間の選好を評価できるよう
       意思決定の目標を明確にする
-    \item \bc{基準選択} (Criteria Selection): 最良の選択肢を選べるよう
+    \item \boldcolor{基準選択} (Criteria Selection): 最良の選択肢を選べるよう
       最良の基準を選択する
   \end{enumerate}
   \begin{alertblock}{Point}
@@ -210,7 +210,7 @@
   \vfill
   \begin{center}
   \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % 筆記体 (macOS 標準)
-    {\tt Thanks for listening\ex}
+    {\tt Thanks for listening\exclaim}
   \end{center}
   \vfill
 \end{frame}

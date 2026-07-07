@@ -19,7 +19,7 @@
 %% Presentation info (edit here for each talk)
 %%------------------------------------------------------------------
 \title{Presentation Title}
-\subtitle{\fontsize{10pt}{0pt}\selectfont {\ddash}Subtitle{\ddash}}
+\subtitle{\fontsize{10pt}{0pt}\selectfont {\emdash}Subtitle{\emdash}}
 \author{Your Name}
 \institute{} % Title page shows logo instead of affiliation text (see \titlegraphic below)
 \date{\footnotesize{\today}}
@@ -44,9 +44,9 @@
 \begin{frame}[label=macros]
   \frametitle{Macros and Citations}
   \begin{itemize}
-    \item Emphasis: \bc{accent bold}, \br{red bold}, \ub{red bold}, \uk{strikethrough}
-    \item Arrow: sequential {\ya} result
-    \item Badges: \rei~example \chu~caution \mon~question \kotae~answer
+    \item Emphasis: \boldcolor{accent bold}, \boldred{red bold}, \underbold{red bold}, \redstrike{strikethrough}
+    \item Arrow: sequential {\arrow} result
+    \item Badges: \examplebadge~example \notebadge~caution \questionbadge~question \answerbadge~answer
     \item Key: \keystroke{Ctrl}+\keystroke{C}
     \item Citations: superscript numbers\cite{nuseibeh2000}\cite{royce1970}\cite{vanlamsweerde2001}
     \item Jump button: \go{title}{Go to Title}
@@ -88,12 +88,12 @@
   \item A goal graph is constructed as follows
   \begin{enumerate}
     \onslide<2->{%
-    \pb{\item Based on customers' needs, the \bc{root goal} $g_1$ is formulated\footnote{A goal represents an achieved state.}}}
+    \nobreakbox{\item Based on customers' needs, the \boldcolor{root goal} $g_1$ is formulated\footnote{A goal represents an achieved state.}}}
     \onslide<3->{%
-    \pb{\item Goals are \bc{decomposed} into subgoals\footnote{The angle mark denotes a decomposition group.}.
+    \nobreakbox{\item Goals are \boldcolor{decomposed} into subgoals\footnote{The angle mark denotes a decomposition group.}.
         Decomposition is repeated until goals become concrete}}
     \onslide<7->{%
-    \pb{\item Requirements are selected from the well-decomposed \bc{leaf goal}s}}
+    \nobreakbox{\item Requirements are selected from the well-decomposed \boldcolor{leaf goal}s}}
   \end{enumerate}
   \end{itemize}
   \centering
@@ -136,7 +136,7 @@
     \pic [draw, angle radius=0.5cm] {angle = g2--g1--g3};
     }
   \end{tikzpicture}\\
-  \onslide<6->{\fc{Goal graph}}
+  \onslide<6->{\captionchip{Goal graph}}
   % Callout bubbles (overlay — does not affect body layout)
   \begin{tikzpicture}[remember picture, overlay]
     \only<7->{
@@ -158,7 +158,7 @@
 \begin{frame}[label=dmproblem]
   \frametitle{Decision Making Problem}
   \begin{itemize}
-    \item \bc{Decision Making Problem} is defined as a three-tuple
+    \item \boldcolor{Decision Making Problem} is defined as a three-tuple
   \end{itemize}
   \begin{block}{Decision Making Problem}
     $D \coloneqq (A, \varTheta, c)$
@@ -166,9 +166,9 @@
   \begin{itemize}
     \item[]
     \begin{itemize}
-      \item $A$: \bc{Alternative}. A set of possible choices
-      \item $\varTheta$: \bc{State of Nature}. A set of possible events in the future
-      \item $c$: \bc{consequence}. A function defined as follows:
+      \item $A$: \boldcolor{Alternative}. A set of possible choices
+      \item $\varTheta$: \boldcolor{State of Nature}. A set of possible events in the future
+      \item $c$: \boldcolor{consequence}. A function defined as follows:
         $A \times \varTheta \xrightarrow{c} \mathbb{R};\, (a, \theta) \xmapsto{c} c\,(a, \theta)$
     \end{itemize}
   \end{itemize}
@@ -181,9 +181,9 @@
 \begin{frame}[label=dmprocedure]
   \frametitle{Decision Making Procedure}
   \begin{enumerate}
-    \item \bc{Goal Setting}: clarify goals of the decision making in order to
+    \item \boldcolor{Goal Setting}: clarify goals of the decision making in order to
       evaluate preferences among alternatives
-    \item \bc{Criteria Selection}: choose the best criterion so as to select
+    \item \boldcolor{Criteria Selection}: choose the best criterion so as to select
       the best alternative among alternatives
   \end{enumerate}
   \begin{alertblock}{Point}
@@ -209,7 +209,7 @@
   \vfill
   \begin{center}
   \IfFontExistsTF{Zapfino}{\setmonofont{Zapfino}}{} % cursive font (standard on macOS)
-    {\tt Thanks for listening\ex}
+    {\tt Thanks for listening\exclaim}
   \end{center}
   \vfill
 \end{frame}

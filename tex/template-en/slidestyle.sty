@@ -415,7 +415,7 @@
 \newcommand{\connectnodes}[5][thick]{\begin{tikzpicture}[overlay]\path[->,#1](#2) edge [out=#4, in=#5] (#3);\end{tikzpicture}}
 
 % Arc of the angle enclosed by three points
-\newcommand\myarc[4]{\begin{scope}[very thick]
+\newcommand\anglearc[4]{\begin{scope}[very thick]
     \clip (#1)--(#2)--(#3)--cycle;
     \draw(#1)circle(#4);\end{scope}}
 
@@ -544,11 +544,11 @@
 \everymath{\displaystyle}
 
 \providecommand{\abs}[1]{\lvert#1\rvert}
-\newcommand{\mathittext}[1]{\mbox{\it{#1}}} % Math ITalic
-\newcommand\defqe{\rotatebox{180}{$\coloneqq$}}
-\newcommand\defeq{\coloneqq}
-\newcommand\deflra{\vcentcolon\hspace{-0.5pt}\Leftrightarrow}
-\newcommand\defsse{\vcentcolon\hspace{-0.5pt}\subseteq}
+\newcommand{\mathitalic}[1]{\mbox{\it{#1}}} % Math ITalic
+\newcommand\eqdef{\rotatebox{180}{$\coloneqq$}}         % "=:" (mirror of \defeq)
+\newcommand\defeq{\coloneqq}                            % ":="
+\newcommand\defiff{\vcentcolon\hspace{-0.5pt}\Leftrightarrow} % ":<=>"
+\newcommand\defsubseteq{\vcentcolon\hspace{-0.5pt}\subseteq}  % ":subseteq"
 \newcommand*{\perm}[2]{{}_{#1}P_{#2}} % permutations
 
 % Upright math symbols (\mathup{\alpha} etc.)
@@ -577,55 +577,55 @@
 \usepackage[normalem]{ulem}   % \sout (strikethrough)
 
 % Emphasis
-\newcommand{\bc}[1]{\textcolor{themeaccent}{\textbf{#1}}} % Bold Color
-\newcommand{\br}[1]{\textcolor{red}{\textbf{#1}}}         % Bold Red
-\newcommand{\ub}[1]{\textbf{\textcolor{red}{#1}}}   % underbold (bold red)
-\newcommand{\uk}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
+\newcommand{\boldcolor}[1]{\textcolor{themeaccent}{\textbf{#1}}} % Bold Color
+\newcommand{\boldred}[1]{\textcolor{red}{\textbf{#1}}}           % Bold Red
+\newcommand{\underbold}[1]{\textbf{\textcolor{red}{#1}}}         % underbold (bold red)
+\newcommand{\redstrike}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
 
 % Arrow symbols
-\newcommand{\ya}{\textcolor{themeaccent}{\ding{220}}}
-\newcommand{\wya}{\textcolor{white}{\ding{220}}}
-\newcommand{\yaa}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+\newcommand{\arrow}{\textcolor{themeaccent}{\ding{220}}}
+\newcommand{\whitearrow}{\textcolor{white}{\ding{220}}}
+\newcommand{\arrowdown}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
 
 % Paragraph boxes
-\newcommand{\pb}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
-\newcommand{\pf}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
+\newcommand{\nobreakbox}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
+\newcommand{\footnotebox}[1]{\vspace{0ex}\parbox[t]{\linewidth-4ex}{#1}} % for footnotes
 
 % Figure captions (turquoise rounded chip)
-\newcommand{\fc}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
+\newcommand{\captionchip}[1]{\tikz[baseline]{\node[fill=themeaccent,anchor=base,rounded corners](#1){\scriptsize\textcolor{white}{#1}};}}
 
 % Badges
-\newcommand{\rei}{\tikz[baseline]{\node[fill=example,anchor=base](ex){\textcolor{white}{\bf Ex}};}} % same green as exampleblock
-\newcommand{\chu}{\tikz[baseline]{\node[fill=red,anchor=base](note){\textcolor{white}{\bf Note}};}}
-\newcommand{\mon}{\tikz[baseline]{\node[fill=themeaccent,anchor=base](q){\textcolor{white}{\bf Q}};}}
-\newcommand{\hatten}{\tikz[baseline]{\node[fill=berkeley,anchor=base](adv){\textcolor{white}{\bf Advanced}};}}
-\newcommand{\ari}{\tikz[baseline]{\node[fill=harvard,anchor=base](tpl){\textcolor{white}{\bf Template}};}}
-\newcommand{\nashi}{\tikz[baseline]{\node[fill=cambridge,anchor=base](notpl){\textcolor{white}{\bf No template}};}}
-\newcommand{\hoshin}{\tikz[baseline]{\node[fill=oxford,anchor=base](policy){\textcolor{white}{\bf Policy}};}}
-\newcommand{\kotae}{\tikz[baseline]{\node[fill=berkeley,anchor=base](a){\textcolor{white}{\bf A}};}}
-\newcommand{\fukushu}{\tikz[baseline]{\node[fill=tufts,anchor=base](review){\textcolor{white}{\bf Review}};}}
+\newcommand{\examplebadge}{\tikz[baseline]{\node[fill=example,anchor=base](ex){\textcolor{white}{\bf Ex}};}} % same green as exampleblock
+\newcommand{\notebadge}{\tikz[baseline]{\node[fill=red,anchor=base](note){\textcolor{white}{\bf Note}};}}
+\newcommand{\questionbadge}{\tikz[baseline]{\node[fill=themeaccent,anchor=base](q){\textcolor{white}{\bf Q}};}}
+\newcommand{\advancedbadge}{\tikz[baseline]{\node[fill=berkeley,anchor=base](adv){\textcolor{white}{\bf Advanced}};}}
+\newcommand{\templatebadge}{\tikz[baseline]{\node[fill=harvard,anchor=base](tpl){\textcolor{white}{\bf Template}};}}
+\newcommand{\notemplatebadge}{\tikz[baseline]{\node[fill=cambridge,anchor=base](notpl){\textcolor{white}{\bf No template}};}}
+\newcommand{\policybadge}{\tikz[baseline]{\node[fill=oxford,anchor=base](policy){\textcolor{white}{\bf Policy}};}}
+\newcommand{\answerbadge}{\tikz[baseline]{\node[fill=berkeley,anchor=base](a){\textcolor{white}{\bf A}};}}
+\newcommand{\reviewbadge}{\tikz[baseline]{\node[fill=tufts,anchor=base](review){\textcolor{white}{\bf Review}};}}
 
 % Reference enumerate circled numbers with \ref
-\newcommand\circref[1]{%
+\newcommand\circleref[1]{%
   \usebeamercolor{enumerate item}%
   \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
   \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf\ref{#1}};%
 }
-\newcommand\circnum[1]{%
+\newcommand\circlenum[1]{%
   \usebeamercolor{enumerate item}%
   \tikzset{beameritem/.style={circle,inner sep=0,minimum size=2ex,text=enumerate item.bg,fill=enumerate item.fg,font=\footnotesize}}%
   \tikz[baseline=(n.base)]\node(n)[beameritem]{\bf #1};%
 }
-\newcommand\tritem{{\footnotesize$\blacktriangleright$}}
+\newcommand\trianglebullet{{\footnotesize$\blacktriangleright$}}
 
 % Dashes
 \newcommand\dash{\textendash}
-\newcommand\ddash{\textemdash}
+\newcommand\emdash{\textemdash}
 
 % Tilted exclamation marks
-\newcommand{\ex}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
-\newcommand{\exw}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
-\newcommand{\exq}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
+\newcommand{\exclaim}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\exclaimwhite}{\color{white}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{!}}
+\newcommand{\exclaimquestion}{\rotatebox[origin=l]{-10}{!}\hspace{-2pt}\rotatebox[origin=l]{-10}{?}}
 
 % Jump button to a labeled frame
 \newcommand{\go}[2]{\raisebox{-0ex}{\hyperlink{#1}{\beamergotobutton{#2}}}}
@@ -638,7 +638,7 @@
 \newcommand{\secrefto}[1]{\ding{42}~Sec.~\ref{#1}}
 
 % Lower table title characters slightly
-\newcommand{\sage}[1]{\raisebox{-1pt}{#1}}
+\newcommand{\lowered}[1]{\raisebox{-1pt}{#1}}
 
 %%------------------------------------------------------------------
 %% 8. Block environments, lists, and tables
@@ -689,11 +689,11 @@
 \fboxrule=0pt
 \fboxsep=0pt
 
-% Tables: thick rules (\whline and column specifier I)
+% Tables: thick rules (\thickhline and column specifier I)
 \usepackage{array}
 \newcolumntype{I}{!{\vrule width 3\arrayrulewidth}}
 \newlength\savedwidth
-\newcommand\whline{%
+\newcommand\thickhline{%
   \noalign{\xdef\origarrayrulewidth{\the\arrayrulewidth}%
   \global\arrayrulewidth 3\arrayrulewidth}%
   \hline%
