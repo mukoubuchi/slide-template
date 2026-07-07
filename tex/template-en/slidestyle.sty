@@ -280,7 +280,7 @@
       \pgfmathsetmacro{\progress}{360*\insertframenumber/\inserttotalframenumber}
       \draw[color=themeaccent,line width=0.5*\beamer@borderwidth] ([xshift=\beamer@counterradius] logopos) arc[radius=\beamer@counterradius, start angle=0, end angle=\progress];
       \fill[fill=white] ([shift={(\progress:\beamer@counterradius)}] logopos) circle (0.5\beamer@borderwidth);
-      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{themeprimary}\insertframenumber}};
+      \node[fill=normal text.bg,draw=AAUsimple.fg,ultra thick,circle,minimum width=2*\beamer@borderwidth] at ([xshift=\beamer@counterradius]logopos) {{\usebeamercolor[fg]{themeprimary}\bfseries\insertframenumber}};
     }
   \end{tikzpicture}%
 }
@@ -367,7 +367,7 @@
 \setbeamerfont{verse}{series=\mdseries}
 \setbeamerfont{quotation}{series=\mdseries}
 \setbeamerfont{note page}{series=\mdseries}
-\setbeamerfont{section number projected}{series=\bfseries}
+\setbeamerfont{section number projected}{series=\bfseries,size=\scriptsize}
 
 %%------------------------------------------------------------------
 %% 5. TikZ

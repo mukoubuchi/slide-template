@@ -8,11 +8,13 @@
 
 XeLaTeX + Beamer presentation slide templates (16:9) with switchable color
 themes (Oxford Blue by default), a header band, and a circular progress
-indicator in the top-right corner.
+indicator with a bold frame number in the top-right corner.
 
 <p align="center">
   <img src=".github/readme-assets/title-ja.png" width="49%" alt="Title page of the Japanese template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
-  <img src=".github/readme-assets/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a blue definition block, an itemized element list, and a red Point block">
+  <img src=".github/readme-assets/title-en.png" width="49%" alt="Title page of the English template: a rounded Oxford-blue title box, date, author, affiliation logo, and an event-name ribbon at the bottom">
+  <img src=".github/readme-assets/sample-slide-en.png" width="49%" alt="A sample definition slide from the English template with a bold progress number, a blue definition block, an itemized element list, and a red Point block">
+  <img src=".github/readme-assets/toc-en.png" width="49%" alt="A contents slide from the English template with bold section-number markers and a bold progress number">
 </p>
 
 | Directory | Description |
@@ -73,7 +75,8 @@ release.
 ## Requirements
 
 - TeX Live (XeLaTeX and `latexmk`)
-- Fonts: uses **Rounded-X Mgen+** if installed, otherwise falls back to
+- Fonts: uses **Rounded-X Mgen+** if installed, with the regular face pinned
+  to `medium` and bold text pinned to `black`; otherwise falls back to
   **Hiragino Maru Gothic ProN** (bundled with macOS). The monospace font
   falls back from Comic Sans MS to Menlo. On non-macOS systems, adjust §1
   of `slidestyle.sty` to fonts available on your machine
@@ -86,8 +89,10 @@ release.
   "# event name" ribbon
 - Header with author, e-mail, and title; the e-mail becomes a mailto link
   only after you replace the placeholder with a real address
-- Progress circle showing the current frame number over an arc
-- Automatic table-of-contents slides at each `\section`
+- Progress circle showing the current frame number over an arc, with the
+  number rendered in the same bold face as headings
+- Automatic table-of-contents slides at each `\section`, including bold
+  section-number markers
 - Emphasis macros, badges, keystroke rendering, jump buttons, block
   environments (incl. exercise/assignment), and TikZ samples
 - Citations as superscript numbers; the References frame lists only cited
