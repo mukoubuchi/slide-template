@@ -15,7 +15,7 @@
 %%  10. その他 (URL 折り返し・ナビゲーション制御)
 %%==================================================================
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{slidestyle}[2026/07/06 v2.3 common slide style]
+\ProvidesPackage{slidestyle}[2026/07/07 v2.3.1 common slide style]
 
 %%------------------------------------------------------------------
 %% 1. フォント
@@ -25,11 +25,42 @@
 \usepackage{xeCJK} % 和文組版 (禁則・和欧文間処理)
 
 % 和文・欧文とも丸ゴシック。Rounded-X Mgen+ が無い環境ではヒラギノ丸ゴにフォールバック
+% 初期テンプレートの見え方に合わせ、Rounded-X では通常を medium、太字を black に固定する
 \IfFontExistsTF{Rounded-X Mgen+ 1cp}{%
-  \setmainfont{Rounded-X Mgen+ 1cp}%
-  \setsansfont{Rounded-X Mgen+ 1cp}%
-  \setCJKmainfont{Rounded-X Mgen+ 1cp}%
-  \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+  \IfFontExistsTF{Rounded-X Mgen+ 1cp medium}{%
+    \IfFontExistsTF{Rounded-X Mgen+ 1cp black}{%
+      \setmainfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setsansfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setCJKmainfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setCJKsansfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+    }{%
+      \setmainfont{Rounded-X Mgen+ 1cp}%
+      \setsansfont{Rounded-X Mgen+ 1cp}%
+      \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+      \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+    }%
+  }{%
+    \setmainfont{Rounded-X Mgen+ 1cp}%
+    \setsansfont{Rounded-X Mgen+ 1cp}%
+    \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+    \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+  }%
 }{%
   \setmainfont{Hiragino Maru Gothic ProN}%
   \setsansfont{Hiragino Maru Gothic ProN}%
@@ -574,9 +605,13 @@
 \newcommand{\redstrike}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % 赤の打ち消し線
 
 % 矢印記号
-\newcommand{\arrow}{\textcolor{themeaccent}{\ding{220}}}
-\newcommand{\whitearrow}{\textcolor{white}{\ding{220}}}
-\newcommand{\arrowdown}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+% \CJKecglue を使い、\xeCJKsetup{CJKecglue=...} / \CJKsetecglue の設定に追従させる
+\DeclareRobustCommand{\aauinlinearrow}[1]{%
+  \unskip\CJKecglue#1\CJKecglue\ignorespaces%
+}
+\DeclareRobustCommand{\arrow}{\aauinlinearrow{\textcolor{themeaccent}{\ding{220}}}}
+\DeclareRobustCommand{\whitearrow}{\aauinlinearrow{\textcolor{white}{\ding{220}}}}
+\DeclareRobustCommand{\arrowdown}{\aauinlinearrow{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}}
 
 % 段落ボックス
 \newcommand{\nobreakbox}[1]{\parbox{\linewidth}{#1}}                    % 行内改行防止

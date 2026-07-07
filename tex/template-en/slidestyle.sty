@@ -15,7 +15,7 @@
 %%  10. Misc (URL breaking, navigation control)
 %%==================================================================
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{slidestyle}[2026/07/06 v2.3 common slide style]
+\ProvidesPackage{slidestyle}[2026/07/07 v2.3.1 common slide style]
 
 %%------------------------------------------------------------------
 %% 1. Fonts
@@ -26,11 +26,42 @@
 
 % Rounded gothic for both Latin and CJK; fall back to Hiragino Maru
 % Gothic where Rounded-X Mgen+ is not installed
+% Match the original template weight: medium for regular text, black for bold
 \IfFontExistsTF{Rounded-X Mgen+ 1cp}{%
-  \setmainfont{Rounded-X Mgen+ 1cp}%
-  \setsansfont{Rounded-X Mgen+ 1cp}%
-  \setCJKmainfont{Rounded-X Mgen+ 1cp}%
-  \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+  \IfFontExistsTF{Rounded-X Mgen+ 1cp medium}{%
+    \IfFontExistsTF{Rounded-X Mgen+ 1cp black}{%
+      \setmainfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setsansfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setCJKmainfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+      \setCJKsansfont{Rounded-X Mgen+ 1cp}[
+        UprightFont={Rounded-X Mgen+ 1cp medium},
+        BoldFont={Rounded-X Mgen+ 1cp black},
+        ItalicFont={Rounded-X Mgen+ 1cp medium},
+        BoldItalicFont={Rounded-X Mgen+ 1cp black}]%
+    }{%
+      \setmainfont{Rounded-X Mgen+ 1cp}%
+      \setsansfont{Rounded-X Mgen+ 1cp}%
+      \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+      \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+    }%
+  }{%
+    \setmainfont{Rounded-X Mgen+ 1cp}%
+    \setsansfont{Rounded-X Mgen+ 1cp}%
+    \setCJKmainfont{Rounded-X Mgen+ 1cp}%
+    \setCJKsansfont{Rounded-X Mgen+ 1cp}%
+  }%
 }{%
   \setmainfont{Hiragino Maru Gothic ProN}%
   \setsansfont{Hiragino Maru Gothic ProN}%
@@ -583,9 +614,13 @@
 \newcommand{\redstrike}[1]{\textcolor{red}{\sout{\textcolor{black}{#1}}}} % red strikethrough
 
 % Arrow symbols
-\newcommand{\arrow}{\textcolor{themeaccent}{\ding{220}}}
-\newcommand{\whitearrow}{\textcolor{white}{\ding{220}}}
-\newcommand{\arrowdown}{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}
+% Reuse xeCJK's CJK/Latin glue so \xeCJKsetup{CJKecglue=...} / \CJKsetecglue applies here too
+\DeclareRobustCommand{\aauinlinearrow}[1]{%
+  \unskip\CJKecglue#1\CJKecglue\ignorespaces%
+}
+\DeclareRobustCommand{\arrow}{\aauinlinearrow{\textcolor{themeaccent}{\ding{220}}}}
+\DeclareRobustCommand{\whitearrow}{\aauinlinearrow{\textcolor{white}{\ding{220}}}}
+\DeclareRobustCommand{\arrowdown}{\aauinlinearrow{\textcolor{themeaccent}{\rotatebox[origin=c]{-90}{\ding{220}}}}}
 
 % Paragraph boxes
 \newcommand{\nobreakbox}[1]{\parbox{\linewidth}{#1}}                    % prevent inline breaks
