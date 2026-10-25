@@ -16,6 +16,3 @@
 
 # macOS
 .DS_Store
-
-# Bob agent workspace
-.bob/
